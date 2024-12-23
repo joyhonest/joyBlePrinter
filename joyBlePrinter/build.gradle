@@ -47,7 +47,7 @@ dependencies {
 //    androidTestImplementation libs.espresso.core
 }
 
-//1.00     第一次发布
+//1.01     第一次发布
 
-//git commit -m "1.00" -a
+//git commit -m "1.01" -a
 //git push -u origin main
