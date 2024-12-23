@@ -1,0 +1,6 @@
+
+include ':app', ':joyBlePrinter'
+//rootProject.name = "Ble_Print_github"
+//include ':app'
+//
+//include ':joyBlePrinter'
