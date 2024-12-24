@@ -48,6 +48,7 @@ dependencies {
 }
 
 //1.01     第一次发布
+//1.02     修复回调在主线程中执行
 
-//git commit -m "1.01" -a
+//git commit -m "1.02" -a
 //git push -u origin main

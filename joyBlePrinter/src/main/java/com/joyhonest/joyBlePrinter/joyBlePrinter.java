@@ -11,6 +11,9 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -30,6 +33,8 @@ public class joyBlePrinter {
     private final int nPacklen = 20;
     private boolean bBuffFull = false;
 
+    private Handler mainHandler;
+
     private int nTmp1 = 0;
 
 
@@ -48,7 +53,7 @@ public class joyBlePrinter {
     int nLineCount;// = GrayDataList.size();
     byte[] m_data = null;
     int nLine = 0;
-    int nStep = 0;
+    int nStep = -1;
 
     private byte[] mSentBuffer;
     private int mSentInx = 0;
@@ -66,8 +71,44 @@ public class joyBlePrinter {
 
     private List<byte[]> GrayDataList;
 
+    private boolean bLog = false;
+
     public joyBlePrinter(Context context, BluetoothDevice device) {
 
+         mainHandler = new Handler(Looper.getMainLooper())
+         {
+             @Override
+             public void handleMessage(@NonNull Message msg) {
+                 //super.handleMessage(msg);
+                 String str = (String)msg.obj;
+                 if(str.equalsIgnoreCase("StatusCallback1"))
+                 {
+                      int x = msg.arg1;
+                      if(callback !=null)
+                      {
+                          callback.onPrinterStatus(x&0xff);
+                      }
+                 }
+                 if(str.equalsIgnoreCase("StatusCallback2"))
+                 {
+                     int x = msg.arg1;
+                     if(callback !=null)
+                     {
+                         callback.onPrinterStatus(x << 8 & 0xff00);
+                     }
+                 }
+                 if(str.equalsIgnoreCase("ConnectedCallback"))
+                 {
+                     int x = msg.arg1;
+                     if(callback!=null)
+                     {
+                         callback.onConnectedStatus(x);
+                     }
+                 }
+
+
+             }
+         };
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
             this.context = context;
             this.bleDevice = device;
@@ -136,11 +177,13 @@ public class joyBlePrinter {
         if (nInx == 0) {
             GrayDataList.clear();
             GrayDataList.add(data);
-            Log.e(TAG, "data start----");
+            if(bLog)
+              Log.e(TAG, "data start----");
         }
         if (nInx == 1) {
             GrayDataList.add(data);
-            Log.e(TAG, "data ----");
+            if(bLog)
+               Log.e(TAG, "data ----");
         }
         if (nInx < 0)       //收到处理好的数据OK，开始打印机打印流程。
         {
@@ -185,7 +228,8 @@ public class joyBlePrinter {
         mSentCount = 9;
         mSentInx = 0;
         WriteData();
-        Log.e(TAG, "设定质量");
+        if(bLog)
+           Log.e(TAG, "设定质量");
     }
 
 
@@ -223,18 +267,25 @@ public class joyBlePrinter {
             // boolean isSuccess = (status == BluetoothGatt.GATT_SUCCESS);
             if (isConnected) {
                 gatt.discoverServices();
-                Log.e(TAG, "connected");
+                if(bLog)
+                    Log.e(TAG, "connected");
             } else {
                 gatt.close();
                 mGatt = null;
                 isOk = false;
                 Write_characteristic = null;
-                Log.e(TAG, "Dis-connected");
+                if(bLog)
+                   Log.e(TAG, "Dis-connected");
                 boolean b = false;
                 //EventBus.getDefault().post(b,"onBlePrinterConnectedStatus");
-                if (callback != null) {
-                    callback.onConnectedStatus(-1);
-                }
+
+                Message msg = Message.obtain();
+                msg.obj = "ConnectedCallback";
+                msg.arg1 = -1;
+                mainHandler.sendMessage(msg);
+//                if (callback != null) {
+//                    callback.onConnectedStatus(-1);
+//                }
 
             }
         }
@@ -244,25 +295,31 @@ public class joyBlePrinter {
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             super.onMtuChanged(gatt, mtu, status);
 
-            Log.e(TAG, "mtu = " + mtu);
+          //  Log.e(TAG, "mtu = " + mtu);
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
-            Log.e(TAG, "connected 2");
+            if(bLog)
+            Log.e(TAG, "connected ");
             mGatt = gatt;
             isOk = true;
+            nStep = -1;
             BluetoothGattService service = mGatt.getService(ServiceUUID);
             Write_characteristic = service.getCharacteristic(writeUUID);
             BluetoothGattCharacteristic notifyCharacteristic = service.getCharacteristic(readUUID);
             boolean bRe = enableNotification(mGatt, true, notifyCharacteristic);//注册Notify通知
             boolean b = true;
             //EventBus.getDefault().post(b,"onBlePrinterConnectedStatus");
-            if (callback != null) {
-                callback.onConnectedStatus(1);
-            }
+//            if (callback != null) {
+//                callback.onConnectedStatus(1);
+//            }
 
+            Message msg = Message.obtain();
+            msg.obj = "ConnectedCallback";
+            msg.arg1 = 1;
+            mainHandler.sendMessage(msg);
         }
 
         //@Override
@@ -301,20 +358,26 @@ public class joyBlePrinter {
         if (bleDevice == null) {
             boolean b=false;
             //EventBus.getDefault().post(b,"onBlePrinterConnectedStatus");
-            if(callback!=null)
-            {
-                callback.onConnectedStatus(-2);
-            }
+//            if(callback!=null)
+//            {
+//                callback.onConnectedStatus(-2);
+//            }
+
+            Message msg = Message.obtain();
+            msg.obj = "ConnectedCallback";
+            msg.arg1 = -2;
+            mainHandler.sendMessage(msg);
+
             return -1;
         }
         if(context == null)
             return -2;
         if(isConnected())
         {
-            if(callback!=null)
-            {
-                callback.onConnectedStatus(1);
-            }
+            Message msg = Message.obtain();
+            msg.obj = "ConnectedCallback";
+            msg.arg1 = 1;
+            mainHandler.sendMessage(msg);
             return 0;
         }
         isOk = false;
@@ -399,7 +462,8 @@ public class joyBlePrinter {
         mSentBuffer[9] = (byte)0xff;
         mSentCount = 10;
         mSentInx = 0;
-        Log.e(TAG,"设定浓度!");
+        if(bLog)
+           Log.e(TAG,"设定浓度!");
         WriteData();
     }
 
@@ -422,7 +486,8 @@ public class joyBlePrinter {
         mSentInx = 0;
         mSentCount = 10;
         WriteData();
-        Log.e(TAG,"设定打印速度");
+        if(bLog)
+         Log.e(TAG,"设定打印速度");
     }
 
     private void setMotor_Value(int n)
@@ -440,6 +505,7 @@ public class joyBlePrinter {
         mSentBuffer[8] = (byte)0xff;
         mSentCount = 9;
         mSentInx = 0;
+        if(bLog)
         Log.e(TAG,"设定马达速度!");
         WriteData();
     }
@@ -474,6 +540,7 @@ public class joyBlePrinter {
         mSentInx = 0;
         mSentCount = mSentBuffer.length;
         WriteData();
+        if(bLog)
         Log.e(TAG,"Send GrayLie "+nLine);
 
     }
@@ -493,10 +560,11 @@ public class joyBlePrinter {
         mSentInx = 0;
         mSentCount = 10;
         WriteData();
+        if(bLog)
         Log.e(TAG,"走纸");
     }
 
-    private void readBleStatusCmd()
+    public void readBleStatusCmd()
     {
         mSentBuffer = new byte[10];
         mSentBuffer[0] = 0x51;
@@ -511,6 +579,7 @@ public class joyBlePrinter {
         mSentCount = 9;
         mSentInx = 0;
         WriteData();
+        if(bLog)
         Log.e(TAG,"获取状态");
         //SystemClock.sleep(100);
     }
@@ -654,6 +723,11 @@ public class joyBlePrinter {
                 return;
             }
             if (nStep == 10) {
+                nStep = 11;
+                readBleStatusCmd();    //多读几次
+                return;
+            }
+            if (nStep == 11) {
                 nStep = -1;
                 readBleStatusCmd();    //多读几次
                 return;
@@ -665,6 +739,16 @@ public class joyBlePrinter {
     {
         if(da!=null)
         {
+            if(bLog) {
+                String str = "";
+                for (byte da1 : da) {
+                    String ss = String.format("%02X", da1);
+                    str = str + " " + ss;
+                }
+
+                Log.e(TAG, str);
+            }
+
             if(da.length>=9)
             {
                 if(da[0] == 0x51 &&
@@ -674,11 +758,15 @@ public class joyBlePrinter {
                 {
                     int Status = da[6];
                     Integer s = Status;
-                    if(callback !=null)
-                    {
-                      //  callback.onGetStatus();
-                        callback.onPrinterStatus(s & 0xff);
-                    }
+                    Message msg = Message.obtain();
+                    msg.obj = "StatusCallback1";
+                    msg.arg1 = s;
+                    mainHandler.sendMessage(msg);
+//                    if(callback !=null)
+//                    {
+//                      //  callback.onGetStatus();
+//                        callback.onPrinterStatus(s & 0xff);
+//                    }
                  //   EventBus.getDefault().post(s,"onGetBlePrinterStatus");
                     /*
                     Bit0：缺纸
@@ -699,26 +787,25 @@ public class joyBlePrinter {
                     if(da[6] != 0)
                     {
                         bBuffFull = true;
+                        if(bLog)
                         Log.e(TAG,"dada full");
                     }
                     else
                     {
+                        if(bLog)
                         Log.e(TAG,"dada empty");
                         bBuffFull = false;
                     }
-                    if(callback !=null) {
-                        callback.onPrinterStatus(s << 8 & 0xff00);
-                    }
+
+                    Message msg = Message.obtain();
+                    msg.obj = "StatusCallback2";
+                    msg.arg1 = s;
+                    mainHandler.sendMessage(msg);
+
                 }
             }
 
-            String str ="";
-            for(byte da1 : da)
-            {
-                String ss = String.format("%02X",da1);
-                str=str+" " + ss;
-            }
-            Log.e(TAG,str);
+
         }
     }
 

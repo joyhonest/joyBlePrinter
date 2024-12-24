@@ -14,6 +14,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.ParcelUuid;
 import android.os.SystemClock;
 import android.util.Log;
@@ -21,6 +23,7 @@ import android.util.Log;
 //import androidx.annotation.RequiresApi;
 //import androidx.core.app.ActivityCompat;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import java.util.ArrayList;
@@ -81,6 +84,19 @@ public class joyBlePrinterManager {
     }
 
     joyBlePrinterClient.joyBlePrinter_ScanningCallback scanningCallback = null;
+
+    private Handler mainHandler = new Handler(Looper.getMainLooper())
+    {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            //
+            if(scanningCallback!=null)
+            {
+                joyBlePrinter printer = (joyBlePrinter)msg.obj;
+                scanningCallback.onFindPrinter(printer);
+            }
+        }
+    };
     ScanCallback mScanCallback = new ScanCallback() {
         @SuppressLint("MissingPermission")
         @Override
@@ -91,7 +107,10 @@ public class joyBlePrinterManager {
                 if (!findDevice(device)) {
                     printerList.add(device);
                     joyBlePrinter printer = new joyBlePrinter(context, device);
-                    scanningCallback.onFindPrinter(printer);
+                    //scanningCallback.onFindPrinter(printer);
+                    Message msg = Message.obtain();
+                    msg.obj = printer;
+                    mainHandler.sendMessage(msg);
                 }
             }
         }
@@ -134,9 +153,11 @@ public class joyBlePrinterManager {
     public void joyBlePrinterStopScaning() {
         if (!bScanning)
             return;
-        if(context == null)
+        if(context == null) {
+            bScanning = false;
             return;
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+        }
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
             bScanning = false;
             handlerDelay.removeCallbacksAndMessages(null);
             if (mScanner != null) {

@@ -30,13 +30,14 @@ public class joyBlePrinterClient {
         }
     }
 
-    // private  static void joyBlePrinter_Init(Context context)
+    //private  static void joyBlePrinter_Init(Context context)
     //public static int  joyBlePrinter_StartScan(scanPrinterCallback callback,int nSec)
     //public static void joyBlePrinter_SelectPrinter(joyBlePrinter printer,joyBlePrinter_StatusCallback callback);
     //public static void joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont)  //bPiont = true 点阵  false 灰度
     //public static  int  joyBlePrinter_Connect()
     //joyBlePrinter_isConnected();
     //public static  int  joyBlePrinter_StartPrintting()
+
 
     public static  void joyBlePrinter_Disconnect()
     {
@@ -56,13 +57,13 @@ public class joyBlePrinterClient {
         return  -1;
 
     }
-    public static  int  joyBlePrinter_StartPrintting(int nValue)
+    public static  int  joyBlePrinter_StartPrintting(int nDensity)
     {
         if(mSelectedPrinter != null)
         {
             if(mSelectedPrinter.isConnected())
             {
-                 mSelectedPrinter.nPrinterValue = nValue;
+                 mSelectedPrinter.nPrinterValue = nDensity;
                  return naStartPrinting();
             }
         }
