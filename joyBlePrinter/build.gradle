@@ -49,6 +49,7 @@ dependencies {
 
 //1.01     第一次发布
 //1.02     修复回调在主线程中执行
+//1.03     修复16级灰度算法
 
-//git commit -m "1.02" -a
+//git commit -m "1.03" -a
 //git push -u origin main
