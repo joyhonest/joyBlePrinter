@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
+import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
@@ -101,9 +102,16 @@ public class joyBlePrinterManager {
         @SuppressLint("MissingPermission")
         @Override
         public void onScanResult(int callbackType, ScanResult result) {
-            super.onScanResult(callbackType, result);
+            //super.onScanResult(callbackType, result);
+
             if (scanningCallback != null) {
                 BluetoothDevice device = result.getDevice();// 获取BLE设备信息
+                ScanRecord scanRecordA = result.getScanRecord();
+                if(scanRecordA!=null) {
+                    byte[] scanRecord = scanRecordA.getBytes();
+                    //21-26
+
+                }
                 if (!findDevice(device)) {
                     printerList.add(device);
                     joyBlePrinter printer = new joyBlePrinter(context, device);
@@ -150,12 +158,13 @@ public class joyBlePrinterManager {
     }
 
 
-    public void joyBlePrinterStopScaning() {
+
+    public int joyBlePrinterStopScaning() {
         if (!bScanning)
-            return;
+            return -3;
         if(context == null) {
             bScanning = false;
-            return;
+            return -1;
         }
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
             bScanning = false;
@@ -166,7 +175,11 @@ public class joyBlePrinterManager {
                 scanningCallback = null;
             }
             Log.e(TAG, "Stop Scanning");
+            return  0;
         }
+        return -2;
+
+
 
     }
 

@@ -2,6 +2,7 @@ package com.joyhonest.joyBlePrinter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -37,7 +38,13 @@ public class joyBlePrinterClient {
     //public static  int  joyBlePrinter_Connect()
     //joyBlePrinter_isConnected();
     //public static  int  joyBlePrinter_StartPrintting()
+    //public static  int  joyBlePrinter_StopScan()
 
+    //public static  void joyBlePrinter_GetFirmwareVersion(joyBlePrinter_FirmwareVersionCallback callback)
+    //public static  void joyBlePrinter_GetSDSize_Battery(joyBlePrinter_getBatteryCallback callback)
+
+
+    //firmwareVersionCallback
 
     public static  void joyBlePrinter_Disconnect()
     {
@@ -50,8 +57,10 @@ public class joyBlePrinterClient {
     {
         if(mSelectedPrinter != null)
         {
-            blePrinterManager.joyBlePrinterStopScaning();
-
+            if(blePrinterManager.joyBlePrinterStopScaning() == 0) //如果还在扫描，就停止扫描并且等待200ms
+            {
+                SystemClock.sleep(250);
+            }
             return mSelectedPrinter.Connect();
         }
         return  -1;
@@ -90,6 +99,18 @@ public class joyBlePrinterClient {
          }
     }
 
+    public  static  int joyBlePrinter_StopScan()
+    {
+        if(blePrinterManager!=null)
+        {
+            return  blePrinterManager.joyBlePrinterStopScaning();
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
     public static void joyBlePrinter_SelectPrinter(joyBlePrinter printer,joyBlePrinter_StatusCallback callback)
     {
         mSelectedPrinter = printer;
@@ -110,6 +131,30 @@ public class joyBlePrinterClient {
 
     }
 
+    public static  void joyBlePrinter_GetFirmwareVersion(joyBlePrinter_FirmwareVersionCallback callback)
+    {
+          mSelectedPrinter.firmwareVersionCallback = callback;
+          mSelectedPrinter.getFirmwareVersion();
+    }
+
+    public static void joyBlePrinter_GetAutoSleepTime(joyBlePrinter_AutoSleepTimeCallback callback)
+    {
+        mSelectedPrinter.autoSleepTimeCallback = callback;
+        mSelectedPrinter.GetAutoSleepTime();
+
+    }
+
+    public static void joyBlePrinter_SetAutoSleepTime(int n)
+    {
+        mSelectedPrinter.SetAutoSleepTime(n);
+
+    }
+
+    public static  void joyBlePrinter_GetSDSize_Battery(joyBlePrinter_getBatteryCallback callback)
+    {
+        mSelectedPrinter.getBatteryCallback = callback;
+        mSelectedPrinter.getDeviceStatus();
+    }
 
     public  interface joyBlePrinter_ScanningCallback
     {
@@ -120,6 +165,20 @@ public class joyBlePrinterClient {
     {
          void onConnectedStatus(int nStatus);
         void onPrinterStatus(int nStatus);
+    }
+
+    public interface joyBlePrinter_getBatteryCallback
+    {
+        void onGetBattery(int nBatter,int nSDSize);
+    }
+    public interface joyBlePrinter_FirmwareVersionCallback
+    {
+        void onGetFirmwareVersion(String SVer);
+    }
+
+    public interface  joyBlePrinter_AutoSleepTimeCallback
+    {
+        void onGetAutoSleepTime(int nMin);
     }
 
 
