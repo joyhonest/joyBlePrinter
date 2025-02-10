@@ -470,8 +470,8 @@ public class joyBlePrinter {
             //0x0f0a，0x1324，0x173e，0x1b58，0x1f72，0X238C，0x27A6
             if (n == 0) {
 
-                mSentBuffer[6] = (byte) 0x0a;
-                mSentBuffer[7] = (byte) 0x0f;
+                mSentBuffer[6] = (byte) 0x20;
+                mSentBuffer[7] = (byte) 0x10;
             }
             if (n == 1) {
                 mSentBuffer[6] = (byte) 0x24;
