@@ -51,6 +51,8 @@ dependencies {
 //1.02     修复回调在主线程中执行
 //1.03     修复16级灰度算法
 //1.04     添加一些api
+//1.05     添加开始打印status
 
-//git commit -m "1.04" -a
+//git commit -m "1.05" -a
 //git push -u origin main
+
