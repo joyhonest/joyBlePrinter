@@ -196,6 +196,12 @@ public class joyBlePrinter {
             System.arraycopy(data, 0, m_data, 0, len);
             nStep = 0;
             F_Sendquality(0x33);
+            Message msg = Message.obtain();
+            msg.obj = "StatusCallback1";
+            msg.arg1 = 0x80 & 0xff; //开始打印
+            msg.arg2 = 0;
+            msg.what = 0;
+            mainHandler.sendMessage(msg);
             return;
         }
         if (nInx == 0) {
