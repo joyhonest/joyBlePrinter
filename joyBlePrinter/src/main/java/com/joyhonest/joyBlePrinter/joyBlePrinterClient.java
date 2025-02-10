@@ -115,7 +115,7 @@ public class joyBlePrinterClient {
     public static void joyBlePrinter_SelectPrinter(joyBlePrinter printer,joyBlePrinter_StatusCallback callback)
     {
         mSelectedPrinter = printer;
-        mSelectedPrinter.callback = callback;
+        mSelectedPrinter.Statuscallback = callback;
     }
 
     public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont)  //bPiont = true 点阵  false 灰度

@@ -75,6 +75,7 @@ public class joyBlePrinter {
 
     private boolean bLog = true;
 
+
     public joyBlePrinter(Context context, BluetoothDevice device) {
 
         mainHandler = new Handler(Looper.getMainLooper()) {
@@ -107,8 +108,8 @@ public class joyBlePrinter {
                 }
                 if (str.equalsIgnoreCase("StatusCallback1")) {
                     int x = msg.arg1;
-                    if (callback != null) {
-                        callback.onPrinterStatus(x & 0xff);
+                    if (Statuscallback != null) {
+                        Statuscallback.onPrinterStatus(x & 0xff);
                     }
                     if(getBatteryCallback !=null)
                     {
@@ -119,14 +120,14 @@ public class joyBlePrinter {
                 }
                 if (str.equalsIgnoreCase("StatusCallback2")) {
                     int x = msg.arg1;
-                    if (callback != null) {
-                        callback.onPrinterStatus(x << 8 & 0xff00);
+                    if (Statuscallback != null) {
+                        Statuscallback.onPrinterStatus(x << 8 & 0xff00);
                     }
                 }
                 if (str.equalsIgnoreCase("ConnectedCallback")) {
                     int x = msg.arg1;
-                    if (callback != null) {
-                        callback.onConnectedStatus(x);
+                    if (Statuscallback != null) {
+                        Statuscallback.onConnectedStatus(x);
                     }
                 }
 
@@ -321,8 +322,8 @@ public class joyBlePrinter {
                 msg.obj = "ConnectedCallback";
                 msg.arg1 = -1;
                 mainHandler.sendMessage(msg);
-//                if (callback != null) {
-//                    callback.onConnectedStatus(-1);
+//                if (Statuscallback != null) {
+//                    Statuscallback.onConnectedStatus(-1);
 //                }
 
             }
@@ -350,8 +351,8 @@ public class joyBlePrinter {
             boolean bRe = enableNotification(mGatt, true, notifyCharacteristic);//注册Notify通知
             boolean b = true;
             //EventBus.getDefault().post(b,"onBlePrinterConnectedStatus");
-//            if (callback != null) {
-//                callback.onConnectedStatus(1);
+//            if (Statuscallback != null) {
+//                Statuscallback.onConnectedStatus(1);
 //            }
 
             Message msg = Message.obtain();
@@ -396,9 +397,9 @@ public class joyBlePrinter {
         if (bleDevice == null) {
             boolean b = false;
             //EventBus.getDefault().post(b,"onBlePrinterConnectedStatus");
-//            if(callback!=null)
+//            if(Statuscallback!=null)
 //            {
-//                callback.onConnectedStatus(-2);
+//                Statuscallback.onConnectedStatus(-2);
 //            }
 
             Message msg = Message.obtain();
@@ -817,10 +818,10 @@ public class joyBlePrinter {
                         msg.what = da[10] + da[11] * 0x100 + da[12] * 0x10000 + da[13] * 0x1000000;
                     }
                     mainHandler.sendMessage(msg);
-//                    if(callback !=null)
+//                    if(Statuscallback !=null)
 //                    {
-//                      //  callback.onGetStatus();
-//                        callback.onPrinterStatus(s & 0xff);
+//                      //  Statuscallback.onGetStatus();
+//                        Statuscallback.onPrinterStatus(s & 0xff);
 //                    }
                     //   EventBus.getDefault().post(s,"onGetBlePrinterStatus");
                     /*
@@ -862,7 +863,7 @@ public class joyBlePrinter {
     }
 
 
-    public joyBlePrinterClient.joyBlePrinter_StatusCallback callback = null;
+    public joyBlePrinterClient.joyBlePrinter_StatusCallback Statuscallback = null;
 
     public joyBlePrinterClient.joyBlePrinter_FirmwareVersionCallback firmwareVersionCallback = null;
 
