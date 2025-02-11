@@ -216,6 +216,16 @@ public class joyBlePrinterClient {
 
     public static void joyBlePrinter_GetBlePrinterisAvailable(joyBlePrinter_isAvailableCallback callback)
     {
+        if(mSelectedPrinter==null)
+        {
+            callback.onIsAvailable(false);
+            return;
+        }
+        if(!mSelectedPrinter.isConnected())
+        {
+            callback.onIsAvailable(false);
+            return;
+        }
         mSelectedPrinter.isAvailableCallback = callback;
         mSelectedPrinter.getIsAvailable();
     }
