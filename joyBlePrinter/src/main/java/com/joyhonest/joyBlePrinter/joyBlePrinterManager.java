@@ -166,16 +166,24 @@ public class joyBlePrinterManager {
             bScanning = false;
             return -1;
         }
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
-            bScanning = false;
-            handlerDelay.removeCallbacksAndMessages(null);
-            if (mScanner != null) {
-                mScanner.stopScan(mScanCallback);
-                SystemClock.sleep(150);
-                scanningCallback = null;
+        try {
+
+
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+                bScanning = false;
+                handlerDelay.removeCallbacksAndMessages(null);
+                if (mScanner != null) {
+                    mScanner.stopScan(mScanCallback);
+                    SystemClock.sleep(150);
+                    scanningCallback = null;
+                }
+                Log.e(TAG, "Stop Scanning");
+                return 0;
             }
-            Log.e(TAG, "Stop Scanning");
-            return  0;
+        }
+        catch (Exception ignored)
+        {
+
         }
         return -2;
 
