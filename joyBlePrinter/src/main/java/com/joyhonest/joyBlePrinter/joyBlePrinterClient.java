@@ -183,6 +183,11 @@ public class joyBlePrinterClient {
     }
 
 
+    public interface  joyBlePrinter_isAvailableCallback
+    {
+        void onIsAvailable(boolean b);
+    }
+
 
     public static boolean joyBlePrinter_isConnected()
     {
@@ -207,6 +212,12 @@ public class joyBlePrinterClient {
         {
             mSelectedPrinter.onGetData(data,nInx);
         }
+    }
+
+    public static void joyBlePrinter_GetBlePrinterisAvailable(joyBlePrinter_isAvailableCallback callback)
+    {
+        mSelectedPrinter.isAvailableCallback = callback;
+        mSelectedPrinter.getIsAvailable();
     }
 
     private static native void naSetDirectBuffer(Object buffer, int nLen);

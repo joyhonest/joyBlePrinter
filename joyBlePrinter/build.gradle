@@ -52,7 +52,8 @@ dependencies {
 //1.03     修复16级灰度算法
 //1.04     添加一些api
 //1.10     添加开始打印status
+//1.11     添加 joyBlePrinter_GetBlePrinterisAvailable
 
-//git commit -m "1.10" -a
+//git commit -m "1.11" -a
 //git push -u origin main
 

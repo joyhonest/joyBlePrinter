@@ -807,6 +807,16 @@ public class joyBlePrinter {
                         da[3] == 0x01)    //打印机状态返回
                 {
                     int Status = da[6];
+                    if(bIsGetAvailable)
+                    {
+                        getAvailableHandle.removeCallbacksAndMessages(null);
+                        bIsGetAvailable = false;
+                        if(isAvailableCallback!=null)
+                        {
+                            isAvailableCallback.onIsAvailable(true);
+                        }
+                        return;
+                    }
                     Integer s = Status;
                     Message msg = Message.obtain();
                     msg.obj = "StatusCallback1";
@@ -871,6 +881,29 @@ public class joyBlePrinter {
     public joyBlePrinterClient.joyBlePrinter_getBatteryCallback getBatteryCallback = null;
 
 
+    public joyBlePrinterClient.joyBlePrinter_isAvailableCallback isAvailableCallback = null;
+
+
+
+
+    private boolean bIsGetAvailable = false;
+    private Handler getAvailableHandle=new Handler(Looper.getMainLooper());
+    public void getIsAvailable()
+    {
+        bIsGetAvailable = true;
+        getDeviceStatus();
+        getAvailableHandle.removeCallbacksAndMessages(null);
+        getAvailableHandle.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(isAvailableCallback!=null)
+                {
+                    isAvailableCallback.onIsAvailable(false);
+                }
+            }
+        },500);
+
+    }
 
     public void getDeviceStatus()
     {
