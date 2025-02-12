@@ -230,10 +230,18 @@ public class joyBlePrinterClient {
         mSelectedPrinter.getIsAvailable();
     }
 
+    public static  void naSetLog(boolean b)
+    {
+            joyBlePrinter.bLog = b;
+    }
+
     private static native void naSetDirectBuffer(Object buffer, int nLen);
 
     private static native int naSetBitbmp(Bitmap bmp,boolean bPiont);
 
     private static  native int naStartPrinting();
+
+
+
 
 }

@@ -73,7 +73,7 @@ public class joyBlePrinter {
 
     private List<byte[]> GrayDataList;
 
-    private boolean bLog = true;
+    public static boolean bLog = false;
 
 
     public joyBlePrinter(Context context, BluetoothDevice device) {
