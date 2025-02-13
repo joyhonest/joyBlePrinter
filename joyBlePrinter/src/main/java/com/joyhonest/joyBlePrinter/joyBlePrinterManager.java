@@ -175,7 +175,13 @@ public class joyBlePrinterManager {
         try {
 
 
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+            int  daa = 0;
+            //if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                daa = ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN);
+            }
+            if(daa == 0)
+            {
                 bScanning = false;
                 handlerDelay.removeCallbacksAndMessages(null);
                 if (mScanner != null) {
@@ -209,10 +215,6 @@ public class joyBlePrinterManager {
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             daa = ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN);
-        }
-        else
-        {
-            daa = ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH);
         }
         if (daa == PackageManager.PERMISSION_GRANTED) {
             bScanning = true;
