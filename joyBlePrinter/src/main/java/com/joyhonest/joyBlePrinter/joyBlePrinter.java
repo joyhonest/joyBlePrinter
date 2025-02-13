@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -76,6 +77,7 @@ public class joyBlePrinter {
     public static boolean bLog = false;
 
 
+    @SuppressLint("MissingPermission")
     public joyBlePrinter(Context context, BluetoothDevice device) {
 
         mainHandler = new Handler(Looper.getMainLooper()) {
@@ -134,19 +136,37 @@ public class joyBlePrinter {
 
             }
         };
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-            this.context = context;
-            this.bleDevice = device;
-            sName = device.getName();
-            sMacAddress = device.getAddress();
-        }
+
+
+                this.context = context;
+                this.bleDevice = device;
+                sName = device.getName();
+                sMacAddress = device.getAddress();
+
         GrayDataList = new ArrayList<>();
 
 
     }
 
+    boolean haspermission()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    @SuppressLint("MissingPermission")
     public int WriteData() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+
+        if (haspermission()) {
             if (isConnected()) {
                 if (Write_characteristic != null) {
                     int nLen = 0;
@@ -272,11 +292,13 @@ public class joyBlePrinter {
     }
 
 
+    @SuppressLint("MissingPermission")
     public boolean enableNotification(BluetoothGatt bluetoothGatt, boolean enable, BluetoothGattCharacteristic characteristic) {
         if (bluetoothGatt == null || characteristic == null) {
             return false;
         }
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+        //if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED)
+        {
             if (!bluetoothGatt.setCharacteristicNotification(characteristic, enable)) {
                 return false;
             }
@@ -291,8 +313,6 @@ public class joyBlePrinter {
                 clientConfig.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
             }
             return bluetoothGatt.writeDescriptor(clientConfig);
-        } else {
-            return false;
         }
 
     }
@@ -385,14 +405,17 @@ public class joyBlePrinter {
     };
 
 
+    @SuppressLint("MissingPermission")
     public void Disconnect() {
         if (isConnected()) {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+            //if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED)
+            {
                 mGatt.disconnect();
             }
         }
     }
 
+    @SuppressLint("MissingPermission")
     public int Connect() {
         if (bleDevice == null) {
             boolean b = false;
@@ -419,13 +442,14 @@ public class joyBlePrinter {
             return 0;
         }
         isOk = false;
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-            BluetoothGatt gatt = bleDevice.connectGatt(context, true, bleCallback);
+        //if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED)
+        {
+            @SuppressLint("MissingPermission") BluetoothGatt gatt = bleDevice.connectGatt(context, true, bleCallback);
             if(gatt!=null)
                 gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             return -100;
         }
-        return -2;
+
     }
 
     //设置打印浓度

@@ -54,11 +54,17 @@ public class joyBlePrinterManager {
 
     public void setContext(Context context) {
         this.context = context.getApplicationContext();
+        if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Log.e("","no ble");
+
+        }
         blManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         if (blManager != null) {
             mBluetoothAdapter = blManager.getAdapter();
-            if (mBluetoothAdapter != null) {
-                mScanner = mBluetoothAdapter.getBluetoothLeScanner();
+            if(mBluetoothAdapter.isEnabled()) {
+                if (mBluetoothAdapter != null) {
+                    mScanner = mBluetoothAdapter.getBluetoothLeScanner();
+                }
             }
         }
         printerList = new ArrayList<>();
@@ -200,8 +206,13 @@ public class joyBlePrinterManager {
         int nResult = -1;
         da[0] = advServiceUUID;
         int daa = PackageManager.PERMISSION_GRANTED;
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
             daa = ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN);
+        }
+        else
+        {
+            daa = ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH);
         }
         if (daa == PackageManager.PERMISSION_GRANTED) {
             bScanning = true;
@@ -210,12 +221,14 @@ public class joyBlePrinterManager {
                 List<ScanFilter> filters = new ArrayList<>();
                 ScanFilter filter = new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString(sServiceUUID)).build();
                 filters.add(filter);
+
                 ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
                 mScanner.startScan(filters, scanSettings, mScanCallback);
                 nResult = 0;
             }
             else
             {
+
                 nResult = -1;
             }
 
