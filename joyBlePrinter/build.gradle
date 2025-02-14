@@ -55,7 +55,8 @@ dependencies {
 //1.11     添加 joyBlePrinter_GetBlePrinterisAvailable
 //1.12     添加 Log 开关
 //1.13     修复在低版本下不扫描的问题
+//1.15     修复一些问题
 
-//git commit -m "1.13" -a
+//git commit -m "1.15" -a
 //git push -u origin main
 

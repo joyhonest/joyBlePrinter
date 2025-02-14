@@ -74,7 +74,7 @@ public class joyBlePrinter {
 
     private List<byte[]> GrayDataList;
 
-    public static boolean bLog = false;
+    public static boolean bLog = true;
 
 
     @SuppressLint("MissingPermission")
@@ -164,7 +164,7 @@ public class joyBlePrinter {
     }
 
     @SuppressLint("MissingPermission")
-    public int WriteData() {
+    public void WriteData() {
 
         if (haspermission()) {
             if (isConnected()) {
@@ -187,15 +187,15 @@ public class joyBlePrinter {
 
                     mGatt.writeCharacteristic(Write_characteristic);
                     if (bNeedSent) {
-                        return 1;
+                        return;
                     } else {
-                        return 0;
+                        return;
                     }
 
                 }
             }
         }
-        return -1;
+        //return;
     }
 
 
@@ -325,7 +325,11 @@ public class joyBlePrinter {
             boolean isConnected = (newState == BluetoothAdapter.STATE_CONNECTED);
             // boolean isSuccess = (status == BluetoothGatt.GATT_SUCCESS);
             if (isConnected) {
-                gatt.discoverServices();
+                //if(!gatt.requestMtu(nPacklen+5))
+                //{
+                    gatt.discoverServices();
+                //}
+
                 if (bLog)
                     Log.e(TAG, "connected");
             } else {
@@ -350,18 +354,20 @@ public class joyBlePrinter {
         }
 
 
+        @SuppressLint("MissingPermission")
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             super.onMtuChanged(gatt, mtu, status);
 
-            //  Log.e(TAG, "mtu = " + mtu);
+              Log.e(TAG, "mtu = " + mtu);
+              //gatt.discoverServices();
         }
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
             if (bLog)
-                Log.e(TAG, "connected ");
+                Log.e(TAG, "connected 11");
             mGatt = gatt;
             isOk = true;
             nStep = -1;
@@ -831,9 +837,9 @@ public class joyBlePrinter {
                         da[3] == 0x01)    //打印机状态返回
                 {
                     int Status = da[6];
+                    getAvailableHandle.removeCallbacksAndMessages(null);
                     if(bIsGetAvailable)
                     {
-                        getAvailableHandle.removeCallbacksAndMessages(null);
                         bIsGetAvailable = false;
                         if(isAvailableCallback!=null)
                         {
@@ -911,7 +917,7 @@ public class joyBlePrinter {
 
 
     private boolean bIsGetAvailable = false;
-    private Handler getAvailableHandle=new Handler(Looper.getMainLooper());
+    private final Handler getAvailableHandle=new Handler(Looper.getMainLooper());
     public void getIsAvailable()
     {
         bIsGetAvailable = true;
