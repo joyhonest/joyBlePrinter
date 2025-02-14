@@ -923,15 +923,13 @@ public class joyBlePrinter {
         bIsGetAvailable = true;
         getDeviceStatus();
         getAvailableHandle.removeCallbacksAndMessages(null);
-        getAvailableHandle.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(isAvailableCallback!=null)
-                {
-                    isAvailableCallback.onIsAvailable(false);
-                }
+        getAvailableHandle.postDelayed(() -> {
+            bIsGetAvailable = false;
+            if(isAvailableCallback!=null)
+            {
+                isAvailableCallback.onIsAvailable(false);
             }
-        },500);
+        },1000);
 
     }
 
