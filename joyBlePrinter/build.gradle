@@ -56,7 +56,8 @@ dependencies {
 //1.12     添加 Log 开关
 //1.13     修复在低版本下不扫描的问题
 //1.16     修复一些问题
+//1.18     添加设定bmp时，设定当横向图片是否旋转打印
 
-//git commit -m "1.16" -a
+//git commit -m "1.18" -a
 //git push -u origin main
 

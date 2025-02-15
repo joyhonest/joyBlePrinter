@@ -74,7 +74,7 @@ public class joyBlePrinter {
 
     private List<byte[]> GrayDataList;
 
-    public static boolean bLog = true;
+    public static boolean bLog = false;
 
 
     @SuppressLint("MissingPermission")

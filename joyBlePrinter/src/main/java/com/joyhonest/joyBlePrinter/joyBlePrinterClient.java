@@ -118,17 +118,21 @@ public class joyBlePrinterClient {
         mSelectedPrinter.Statuscallback = callback;
     }
 
+    public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont,boolean bRotate)
+    {
+        if(mSelectedPrinter !=null)
+        {
+            mSelectedPrinter.bLattice = bPiont;
+            return naSetBitbmpB(bmp,bPiont,bRotate);
+        }
+        else
+        {
+            return  -1;
+        }
+    }
     public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont)  //bPiont = true 点阵  false 灰度
     {
-           if(mSelectedPrinter !=null)
-           {
-               mSelectedPrinter.bLattice = bPiont;
-               return naSetBitbmp(bmp,bPiont);
-           }
-           else
-           {
-               return  -1;
-           }
+           return joyBlePrinter_SetBitbmp(bmp,bPiont,true);
 
     }
 
@@ -237,7 +241,8 @@ public class joyBlePrinterClient {
 
     private static native void naSetDirectBuffer(Object buffer, int nLen);
 
-    private static native int naSetBitbmp(Bitmap bmp,boolean bPiont);
+
+    private static native int naSetBitbmpB(Bitmap bmp,boolean bPiont,boolean bRotate);
 
     private static  native int naStartPrinting();
 
