@@ -44,7 +44,7 @@ public class joyBlePrinterManager {
     volatile static joyBlePrinterManager singleton;
 
     UUID advServiceUUID = UUID.fromString("0000af30-0000-1000-8000-00805f9b34fb");
-    String sServiceUUID = "0000af30-0000-1000-8000-00805f9b34fb";
+    String sAdvServiceUUID = "0000af30-0000-1000-8000-00805f9b34fb";
 
     private joyBlePrinterManager() {
         if (singleton != null) {
@@ -104,6 +104,8 @@ public class joyBlePrinterManager {
             }
         }
     };
+
+    int dssss = 0;
     ScanCallback mScanCallback = new ScanCallback() {
         @SuppressLint("MissingPermission")
         @Override
@@ -114,8 +116,11 @@ public class joyBlePrinterManager {
                 BluetoothDevice device = result.getDevice();// 获取BLE设备信息
                 ScanRecord scanRecordA = result.getScanRecord();
                 if(scanRecordA!=null) {
+                    String str = device.getName();
                     byte[] scanRecord = scanRecordA.getBytes();
                     //21-26
+                    dssss = 0;
+
 
                 }
                 if (!findDevice(device)) {
@@ -173,8 +178,6 @@ public class joyBlePrinterManager {
             return -1;
         }
         try {
-
-
             int  daa = 0;
             //if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED)
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
@@ -190,16 +193,19 @@ public class joyBlePrinterManager {
                     scanningCallback = null;
                 }
                 Log.e(TAG, "Stop Scanning");
-                return 0;
+
             }
         }
         catch (Exception ignored)
         {
 
         }
-        return -2;
-
-
+        finally {
+            handlerDelay.removeCallbacksAndMessages(null);
+            bScanning = false;
+            scanningCallback = null;
+        }
+        return 0;
 
     }
 
@@ -207,9 +213,9 @@ public class joyBlePrinterManager {
     private int ScanBluePrinter() {
         if(bScanning)
             return 0;
+        int nResult = -1;
         printerList.clear();
         UUID[] da = new UUID[1];
-        int nResult = -1;
         da[0] = advServiceUUID;
         int daa = PackageManager.PERMISSION_GRANTED;
 
@@ -221,7 +227,7 @@ public class joyBlePrinterManager {
             if(mScanner!=null)
             {
                 List<ScanFilter> filters = new ArrayList<>();
-                ScanFilter filter = new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString(sServiceUUID)).build();
+                ScanFilter filter = new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString(sAdvServiceUUID)).build();
                 filters.add(filter);
 
                 ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();

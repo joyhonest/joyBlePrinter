@@ -47,8 +47,8 @@ public class joyBlePrinter {
 
     private boolean bNeedSent = false;
     Context context;
-    public String sName = "";
-    public String sMacAddress = "";
+    public String sName ="aaac";
+    public String sMacAddress ;
 
     BluetoothDevice bleDevice;
 
@@ -79,6 +79,8 @@ public class joyBlePrinter {
 
     @SuppressLint("MissingPermission")
     public joyBlePrinter(Context context, BluetoothDevice device) {
+
+
 
         mainHandler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -168,6 +170,10 @@ public class joyBlePrinter {
 
         if (haspermission()) {
             if (isConnected()) {
+                if(sName.isEmpty())
+                {
+                    ;
+                }
                 if (Write_characteristic != null) {
                     int nLen = 0;
                     if (mSentInx + nPacklen >= mSentCount) {
@@ -200,7 +206,7 @@ public class joyBlePrinter {
 
 
     public void onGetData(byte[] data, int nInx) {
-        if (nInx == -8) {
+        if (nInx == -8) {      //point
             int n = data.length;
             int len = n;
             int lines = len / 48;
@@ -236,6 +242,7 @@ public class joyBlePrinter {
             if (bLog)
                 Log.e(TAG, "data ----");
         }
+
         if (nInx < 0)       //收到处理好的数据OK，开始打印机打印流程。
         {
             nLineCount = GrayDataList.size();
@@ -450,7 +457,7 @@ public class joyBlePrinter {
         isOk = false;
         //if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED)
         {
-            @SuppressLint("MissingPermission") BluetoothGatt gatt = bleDevice.connectGatt(context, true, bleCallback);
+            @SuppressLint("MissingPermission") BluetoothGatt gatt = bleDevice.connectGatt(context, false, bleCallback);
             if(gatt!=null)
                 gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             return -100;
@@ -801,7 +808,7 @@ public class joyBlePrinter {
 
                 if (da[0] == 0x51 &&
                         da[1] == 0x78 &&
-                        da[2] == (byte) 0xF2 &&
+                        da[2] == (byte) 0x92 &&
                         da[3] == 0x01)    //
                 {
                     if(da[6] == 0x01)   //自动关机时间
@@ -816,7 +823,7 @@ public class joyBlePrinter {
 
                 if (da[0] == 0x51 &&
                         da[1] == 0x78 &&
-                        da[2] == (byte) 0xA8 &&
+                        da[2] == (byte) 0x90 &&
                         da[3] == 0x01)    //固件版本
                 {
                         if(da.length>=12) {
@@ -955,7 +962,8 @@ public class joyBlePrinter {
         mSentBuffer = new byte[20];
         mSentBuffer[0] = 0x51;
         mSentBuffer[1] = 0x78;
-        mSentBuffer[2] = (byte)0xF2;
+        //mSentBuffer[2] = (byte)0xF2;
+        mSentBuffer[2] = (byte)0x92;
         mSentBuffer[3] = 0x00;
         mSentBuffer[4] = 0x06;
 
@@ -978,7 +986,8 @@ public class joyBlePrinter {
         mSentBuffer = new byte[20];
         mSentBuffer[0] = 0x51;
         mSentBuffer[1] = 0x78;
-        mSentBuffer[2] = (byte)0xF2;
+        //mSentBuffer[2] = (byte)0xF2;
+        mSentBuffer[2] = (byte)0x92;
         mSentBuffer[3] = 0x00;
         mSentBuffer[4] = 0x06;
         mSentBuffer[5] = 0x00;
@@ -999,7 +1008,8 @@ public class joyBlePrinter {
             mSentBuffer = new byte[20];
             mSentBuffer[0] = 0x51;
             mSentBuffer[1] = 0x78;
-            mSentBuffer[2] = (byte)0xA8;
+            //mSentBuffer[2] = (byte)0xA8;
+        mSentBuffer[2] = (byte)0x90;
             mSentBuffer[3] = 0x00;
             mSentBuffer[4] = 0x01;
             mSentBuffer[5] = 0x00;

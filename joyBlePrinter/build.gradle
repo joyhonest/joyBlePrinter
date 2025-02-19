@@ -18,6 +18,11 @@ android {
 
     buildTypes {
         release {
+            minifyEnabled true
+            //shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -57,7 +62,8 @@ dependencies {
 //1.13     修复在低版本下不扫描的问题
 //1.16     修复一些问题
 //1.18     添加设定bmp时，设定当横向图片是否旋转打印
+//1.19     添加混淆
 
-//git commit -m "1.18" -a
+//git commit -m "1.19" -a
 //git push -u origin main
 

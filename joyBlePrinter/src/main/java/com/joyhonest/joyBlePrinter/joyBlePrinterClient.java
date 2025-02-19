@@ -2,12 +2,15 @@ package com.joyhonest.joyBlePrinter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
 
 public class joyBlePrinterClient {
+
     private static joyBlePrinterManager blePrinterManager = null;
     private  static joyBlePrinter mSelectedPrinter = null;
 
@@ -15,18 +18,18 @@ public class joyBlePrinterClient {
 
 
 
-    public static ByteBuffer mDirectBuffer;
+    //public static ByteBuffer mDirectBuffer;
 
 
     private static final String TAG = "JoyBlePrinter";
     static {
         try {
             System.loadLibrary("JoyBlePrinter");    //2024-07-09 //名称改为JoyCamera
-            mDirectBuffer = ByteBuffer.allocateDirect(384*2000+1024);     //获取每帧数据，主要根据实际情况，分配足够的空间。
-            naSetDirectBuffer(mDirectBuffer, 384*2000+1024);
+      //      mDirectBuffer = ByteBuffer.allocateDirect(384*2000+1024);     //获取每帧数据，主要根据实际情况，分配足够的空间。
+           // naSetDirectBuffer(mDirectBuffer, 384*2000+1024);
         } catch (UnsatisfiedLinkError Ule) {
             Log.e(TAG, "Cannot load JoyBlePrinter.so ...");
-            Ule.printStackTrace();
+            //Ule.printStackTrace();
         } finally {
         }
     }
@@ -60,9 +63,19 @@ public class joyBlePrinterClient {
         {
             if(blePrinterManager.joyBlePrinterStopScaning() == 0) //如果还在扫描，就停止扫描并且等待200ms
             {
-                SystemClock.sleep(250);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSelectedPrinter.Connect();
+                    }
+                },500);
             }
-            return mSelectedPrinter.Connect();
+            else
+            {
+                return mSelectedPrinter.Connect();
+            }
+            return 0;
+            //return mSelectedPrinter.Connect();
         }
         return  -1;
 
@@ -138,25 +151,37 @@ public class joyBlePrinterClient {
 
     public static  void joyBlePrinter_GetFirmwareVersion(joyBlePrinter_FirmwareVersionCallback callback)
     {
+        if(mSelectedPrinter == null)
+            return;
           mSelectedPrinter.firmwareVersionCallback = callback;
           mSelectedPrinter.getFirmwareVersion();
     }
 
     public static void joyBlePrinter_GetAutoSleepTime(joyBlePrinter_AutoSleepTimeCallback callback)
     {
+        if(mSelectedPrinter == null)
+            return;
         mSelectedPrinter.autoSleepTimeCallback = callback;
         mSelectedPrinter.GetAutoSleepTime();
 
     }
+    public static void joyBlePrinter_SetLogEnable(boolean b)
+    {
+        joyBlePrinter.bLog = b;
+    }
 
     public static void joyBlePrinter_SetAutoSleepTime(int n)
     {
+        if(mSelectedPrinter ==null)
+            return;
         mSelectedPrinter.SetAutoSleepTime(n);
 
     }
 
     public static  void joyBlePrinter_GetSDSize_Battery(joyBlePrinter_getBatteryCallback callback)
     {
+        if(mSelectedPrinter ==null)
+            return;
         mSelectedPrinter.getBatteryCallback = callback;
         mSelectedPrinter.getDeviceStatus();
     }
@@ -230,8 +255,14 @@ public class joyBlePrinterClient {
             callback.onIsAvailable(false);
             return;
         }
-        mSelectedPrinter.isAvailableCallback = callback;
-        mSelectedPrinter.getIsAvailable();
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSelectedPrinter.isAvailableCallback = callback;
+                mSelectedPrinter.getIsAvailable();
+            }
+        },1500);
+
     }
 
     public static  void naSetLog(boolean b)
@@ -239,11 +270,8 @@ public class joyBlePrinterClient {
             joyBlePrinter.bLog = b;
     }
 
-    private static native void naSetDirectBuffer(Object buffer, int nLen);
-
 
     private static native int naSetBitbmpB(Bitmap bmp,boolean bPiont,boolean bRotate);
-
     private static  native int naStartPrinting();
 
 

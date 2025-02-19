@@ -19,3 +19,42 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+#-keep class com.joyhonest.joyBlePrinter.joyBlePrinterClient.**{*;}
+
+-verbose
+
+#-keepclasseswithmembers class * {
+#    native <methods>;
+#}
+
+#-keep class com.joyhonest.joyBlePrinter.joyBlePrinterClient.**{*;}
+-dontskipnonpubliclibraryclassmembers
+
+
+-keep interface com.joyhonest.joyBlePrinter.** {
+    *;
+}
+
+-keep class com.joyhonest.joyBlePrinter.joyBlePrinterClient
+{
+    public static <methods>;
+    private static void onGetData(byte[],int);
+}
+
+
+-dontwarn com.joyhonest.joyBlePrinter.joyBlePrinterClient.**
+
+
+
+
+-keep class com.joyhonest.joyBlePrinter.joyBlePrinter
+#-keep class com.joyhonest.joyBlePrinter.joyBlePrinter
+#{
+#    public <methods>;
+#}
+-keepclassmembers class com.joyhonest.joyBlePrinter.joyBlePrinter {
+    java.lang.String sName;
+    java.lang.String sMacAddress;
+}
+
