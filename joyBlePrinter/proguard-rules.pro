@@ -48,10 +48,10 @@
 
 
 -keep class com.joyhonest.joyBlePrinter.joyBlePrinter
-#-keep class com.joyhonest.joyBlePrinter.joyBlePrinter
-#{
-#    public <methods>;
-#}
+-keep class com.joyhonest.joyBlePrinter.joyBlePrinter
+{
+    public boolean isConnected();
+}
 -keepclassmembers class com.joyhonest.joyBlePrinter.joyBlePrinter {
     java.lang.String sName;
     java.lang.String sMacAddress;
