@@ -119,7 +119,8 @@ public class joyBlePrinter {
                     {
                         int xx= msg.arg2;
                         int x2 = msg.what;
-                        getBatteryCallback.onGetBattery(xx,x2);
+                        getBatteryCallback.onGetBattery(xx, x2);
+
                     }
                 }
 //                if (str.equalsIgnoreCase("StatusCallback2")) {
@@ -863,6 +864,10 @@ public class joyBlePrinter {
                     if(da.length >=13) {
                         msg.arg2 = da[9] & 0x7f;
                         msg.what = da[10] + da[11] * 0x100 + da[12] * 0x10000 + da[13] * 0x1000000;
+                    }
+                    else
+                    {
+                        msg.arg2 = -1;
                     }
                     mainHandler.sendMessage(msg);
 //                    if(Statuscallback !=null)
