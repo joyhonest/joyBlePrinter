@@ -93,6 +93,7 @@ public class joyBlePrinter {
                     if(autoSleepTimeCallback!=null)
                     {
                         autoSleepTimeCallback.onGetAutoSleepTime(n);
+                        autoSleepTimeCallback = null;
                     }
                 }
                 if(str.startsWith("FirmwareVersion:"))
@@ -107,6 +108,7 @@ public class joyBlePrinter {
                     {
                         if (firmwareVersionCallback != null) {
                             firmwareVersionCallback.onGetFirmwareVersion("");
+                            firmwareVersionCallback = null;
                         }
                     }
                 }
@@ -120,6 +122,7 @@ public class joyBlePrinter {
                         int xx= msg.arg2;
                         int x2 = msg.what;
                         getBatteryCallback.onGetBattery(xx, x2);
+                        getBatteryCallback = null;
 
                     }
                 }
@@ -227,7 +230,7 @@ public class joyBlePrinter {
             Message msg = Message.obtain();
             msg.obj = "StatusCallback1";
             msg.arg1 = 0x80 & 0xff; //开始打印
-            msg.arg2 = 0;
+            msg.arg2 = 1;
             msg.what = 0;
             mainHandler.sendMessage(msg);
             return;
