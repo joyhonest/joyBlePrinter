@@ -37,7 +37,7 @@ public class joyBlePrinterClient {
     //private  static void joyBlePrinter_Init(Context context)
     //public static int  joyBlePrinter_StartScan(scanPrinterCallback callback,int nSec)
     //public static void joyBlePrinter_SelectPrinter(joyBlePrinter printer,joyBlePrinter_StatusCallback callback);
-    //public static void joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont)  //bPiont = true 点阵  false 灰度
+    //public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont,boolean bAutoRotate)  //bPiont = true 点阵  false 灰度 bAutoRotate  自动选择
     //public static  int  joyBlePrinter_Connect()
     //joyBlePrinter_isConnected();
     //public static  int  joyBlePrinter_StartPrintting()
@@ -46,6 +46,7 @@ public class joyBlePrinterClient {
     //public static  void joyBlePrinter_GetFirmwareVersion(joyBlePrinter_FirmwareVersionCallback callback)
     //public static  void joyBlePrinter_GetSDSize_Battery(joyBlePrinter_getBatteryCallback callback)
     //public static void joyBlePrinter_GetAutoSleepTime(joyBlePrinter_AutoSleepTimeCallback callback)
+    //public static void joyBlePrinter_SetAutoSleepTime(int n)
 
 
     //firmwareVersionCallback
@@ -63,12 +64,7 @@ public class joyBlePrinterClient {
         {
             if(blePrinterManager.joyBlePrinterStopScaning() == 0) //如果还在扫描，就停止扫描并且等待200ms
             {
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSelectedPrinter.Connect();
-                    }
-                },500);
+                new Handler(Looper.getMainLooper()).postDelayed(() -> mSelectedPrinter.Connect(),500);
             }
             else
             {
@@ -131,12 +127,12 @@ public class joyBlePrinterClient {
         mSelectedPrinter.Statuscallback = callback;
     }
 
-    public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont,boolean bRotate)
+    public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont,boolean bAutoRotate)
     {
         if(mSelectedPrinter !=null)
         {
             mSelectedPrinter.bLattice = bPiont;
-            return naSetBitbmpB(bmp,bPiont,bRotate);
+            return naSetBitbmpB(bmp,bPiont,bAutoRotate);
         }
         else
         {
@@ -151,8 +147,9 @@ public class joyBlePrinterClient {
 
     public static  void joyBlePrinter_GetFirmwareVersion(joyBlePrinter_FirmwareVersionCallback callback)
     {
-        if(mSelectedPrinter == null)
+        if(mSelectedPrinter == null) {
             return;
+        }
           mSelectedPrinter.firmwareVersionCallback = callback;
           mSelectedPrinter.getFirmwareVersion();
     }

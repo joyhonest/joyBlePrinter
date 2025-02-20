@@ -122,12 +122,12 @@ public class joyBlePrinter {
                         getBatteryCallback.onGetBattery(xx,x2);
                     }
                 }
-                if (str.equalsIgnoreCase("StatusCallback2")) {
-                    int x = msg.arg1;
-                    if (Statuscallback != null) {
-                        Statuscallback.onPrinterStatus(x << 8 & 0xff00);
-                    }
-                }
+//                if (str.equalsIgnoreCase("StatusCallback2")) {
+//                    int x = msg.arg1;
+//                    if (Statuscallback != null) {
+//                        Statuscallback.onPrinterStatus(x << 8 & 0xff00);
+//                    }
+//                }
                 if (str.equalsIgnoreCase("ConnectedCallback")) {
                     int x = msg.arg1;
                     if (Statuscallback != null) {
@@ -897,10 +897,10 @@ public class joyBlePrinter {
                         bBuffFull = false;
                     }
 
-                    Message msg = Message.obtain();
-                    msg.obj = "StatusCallback2";
-                    msg.arg1 = s;
-                    mainHandler.sendMessage(msg);
+//                    Message msg = Message.obtain();
+//                    msg.obj = "StatusCallback2";
+//                    msg.arg1 = s;
+//                    mainHandler.sendMessage(msg);
 
                 }
             }

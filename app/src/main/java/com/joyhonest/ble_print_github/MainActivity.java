@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -241,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
                 Bitmap mBmp = BitmapFactory.decodeResource(this.getResources(), R.mipmap.person06);
-                joyBlePrinterClient.joyBlePrinter_SetBitbmp(mBmp, blattice,false);
+                joyBlePrinterClient.joyBlePrinter_SetBitbmp(mBmp, blattice,true);
                 joyBlePrinterClient.joyBlePrinter_StartPrintting(4);
                 F_DispMessage("正在打印", false);
             }
