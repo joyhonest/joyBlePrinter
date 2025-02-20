@@ -65,7 +65,8 @@ dependencies {
 //1.18     添加设定bmp时，设定当横向图片是否旋转打印
 //1.20     添加混淆
 //1.21     添加混淆
+//1.22     修改 图片处理，和iOS一致
 
-//git commit -m "1.21" -a
+//git commit -m "1.22" -a
 //git push -u origin main
 
