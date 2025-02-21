@@ -76,6 +76,7 @@ public class joyBlePrinter {
 
     public static boolean bLog = false;
 
+    private int nStatus = 0;
 
     @SuppressLint("MissingPermission")
     public joyBlePrinter(Context context, BluetoothDevice device) {
@@ -856,16 +857,16 @@ public class joyBlePrinter {
                         {
                             isAvailableCallback.onIsAvailable(true);
                         }
-                        return;
                     }
-                    Integer s = Status;
+
+                    nStatus = Status;
                     Message msg = Message.obtain();
                     msg.obj = "StatusCallback1";
-                    msg.arg1 = s;
-                    msg.arg2 = 0;
+                    msg.arg1 = Status;
+                    //msg.arg2 = 0;
                     msg.what = 0;
                     if(da.length >=13) {
-                        msg.arg2 = da[9] & 0x7f;
+                        msg.arg2 = da[9] & 0x7f;   //电量
                         msg.what = da[10] + da[11] * 0x100 + da[12] * 0x10000 + da[13] * 0x1000000;
                     }
                     else
@@ -873,12 +874,6 @@ public class joyBlePrinter {
                         msg.arg2 = -1;
                     }
                     mainHandler.sendMessage(msg);
-//                    if(Statuscallback !=null)
-//                    {
-//                      //  Statuscallback.onGetStatus();
-//                        Statuscallback.onPrinterStatus(s & 0xff);
-//                    }
-                    //   EventBus.getDefault().post(s,"onGetBlePrinterStatus");
                     /*
                     Bit0：缺纸
                     ➢ Bit1：开盖

@@ -60,63 +60,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         binding.listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        binding.listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //选择具体的哪一台打印机
+        binding.listView.setOnItemClickListener((parent, view, position, id) -> {
+            //选择具体的哪一台打印机
 
-                joyBlePrinterClient.joyBlePrinter_SelectPrinter(blePrinterList.get(position), new joyBlePrinterClient.joyBlePrinter_StatusCallback() {
-                    @Override
-                    public void onConnectedStatus(int nStatus) {
-                        if(nStatus == 1)   //已经连接
-                        {
-
-
-                            F_DispMessage("已经连接上打印机", false);
-                            HiddenmesageBox();
-//                              Bitmap mBmp = BitmapFactory.decodeResource(getResources(), R.mipmap.shudu04);
-//                              joyBlePrinterClient.joyBlePrinter_SetBitbmp(mBmp, blattice);
-//                              joyBlePrinterClient.joyBlePrinter_StartPrintting(3);
-
-                                    joyBlePrinterClient.joyBlePrinter_GetBlePrinterisAvailable(b -> Log.e(TAG,"data = "+b));
-
-
-
-
-                        }
-                        if(nStatus <0)  //断开连接
-                        {
-
-                            F_DispMessage("已经断开打印机", false);
-                            HiddenmesageBox();
-
-
-                        }
+            joyBlePrinterClient.joyBlePrinter_SelectPrinter(blePrinterList.get(position), new joyBlePrinterClient.joyBlePrinter_StatusCallback() {
+                @Override
+                public void onConnectedStatus(int nStatus) {
+                    if(nStatus == 1)   //已经连接
+                    {
+                        F_DispMessage("已经连接上打印机", false);
+                        HiddenmesageBox();
+                        joyBlePrinterClient.joyBlePrinter_GetBlePrinterisAvailable(b -> Log.e(TAG,"data = "+b));
                     }
-
-                    @Override
-                    public void onPrinterStatus(int nStatue) {
-                        Log.e(TAG,"Status =  "+ nStatue);
-                        if(nStatue == 00)
-                        {
-                            F_DispMessage("打印完成！", false);
-                            HiddenmesageBox();
-                        }
-                     /*
-                     /*
-                    Bit0：缺纸
-                    ➢ Bit1：开盖
-                    ➢ Bit2：过热
-                    ➢ Bit3：缺电
-                    ➢ 0x03：缺纸+纸仓开
-                    ➢ 0x80：正在打印
-                    ➢ 0x00：空闲态
-                      */
+                    if(nStatus <0)  //断开连接
+                    {
+                        F_DispMessage("已经断开打印机", false);
+                        HiddenmesageBox();
                     }
-                });
-                joyBlePrinterClient.joyBlePrinter_Connect();
-                F_DispMessage("正在连接蓝牙打印机", false);
-            }
+                }
+                @Override
+                public void onPrinterStatus(int nStatue)
+                {
+                    Log.e(TAG,"Status =  "+ nStatue);
+                    if(nStatue == 0)
+                    {
+                        F_DispMessage("打印完成！", false);
+                        HiddenmesageBox();
+                    }
+                 /*
+                 /*
+                Bit0：缺纸
+                ➢ Bit1：开盖
+                ➢ Bit2：过热
+                ➢ Bit3：缺电
+                ➢ 0x03：缺纸+纸仓开
+                ➢ 0x80：正在打印
+                ➢ 0x00：空闲态
+                  */
+                }
+            });
+            joyBlePrinterClient.joyBlePrinter_Connect();
+            F_DispMessage("正在连接蓝牙打印机", false);
         });
 
         //1 初始化

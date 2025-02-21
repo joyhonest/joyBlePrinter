@@ -223,6 +223,15 @@ public class joyBlePrinterClient {
         return  blePrinterManager!=null && blePrinterManager.isBleSupported();
     }
 
+
+    public static  void joyBlePrinter_GetPrinterStatus()
+    {
+        if(mSelectedPrinter!=null)
+        {
+            mSelectedPrinter.getDeviceStatus();
+        }
+    }
+
  // 检查蓝牙是否启用
     public boolean isBluetoothEnabled() {
         return blePrinterManager !=null && blePrinterManager.isBluetoothEnabled();
