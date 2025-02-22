@@ -24,6 +24,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.UUID;
 
 public class joyBlePrinter {
     private final String TAG = "joyBlePrinter";
-    private final int nPacklen = 20;
+    private  int nPacklen = 200;
     private boolean bBuffFull = false;
 
     private Handler mainHandler;
@@ -212,19 +213,10 @@ public class joyBlePrinter {
 
     public void onGetData(byte[] data, int nInx) {
         if (nInx == -8) {      //point
-            int n = data.length;
-            int len = n;
-            int lines = len / 48;
-            nLineCount = lines;
+            int len = data.length;
+            nLineCount = len / 48;
             nLine = 0;
-            //nMainLen = n;
-            m_data = new byte[n];
-            //ByteBuffer buf = naPrinter.mDirectBuffer;
-            //buf.flip();
-            //buf.rewind();
-//            for (int i = 0; i < len; i++) {
-//                m_data[i] = buf.get(i);
-//            }
+            m_data = new byte[len];
             System.arraycopy(data, 0, m_data, 0, len);
             nStep = 0;
             F_Sendquality(0x33);
@@ -253,7 +245,7 @@ public class joyBlePrinter {
             nLineCount = GrayDataList.size();
             nLine = 0;
             nStep = 0;
-            F_Sendquality(0x33);
+            F_Sendquality(0x34);
 
             Message msg = Message.obtain();
             msg.obj = "StatusCallback1";
@@ -261,6 +253,9 @@ public class joyBlePrinter {
             msg.arg2 = 0;
             msg.what = 0;
             mainHandler.sendMessage(msg);
+            if (bLog) {
+                Log.e(TAG, "data is OK");
+            }
 
         }
     }
@@ -329,7 +324,7 @@ public class joyBlePrinter {
 
     }
 
-    private BluetoothGattCallback bleCallback = new BluetoothGattCallback() {
+    private final BluetoothGattCallback bleCallback = new BluetoothGattCallback() {
         @SuppressLint("MissingPermission")
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -337,10 +332,13 @@ public class joyBlePrinter {
             boolean isConnected = (newState == BluetoothAdapter.STATE_CONNECTED);
             // boolean isSuccess = (status == BluetoothGatt.GATT_SUCCESS);
             if (isConnected) {
-                //if(!gatt.requestMtu(nPacklen+5))
-                //{
-                    gatt.discoverServices();
-                //}
+
+                if(!gatt.requestMtu(nPacklen+3))
+                {
+                    nPacklen = 20;
+                }
+                    //gatt.discoverServices();
+
 
                 if (bLog)
                     Log.e(TAG, "connected");
@@ -370,11 +368,13 @@ public class joyBlePrinter {
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             super.onMtuChanged(gatt, mtu, status);
-
-              Log.e(TAG, "mtu = " + mtu);
-              //gatt.discoverServices();
+            if(bLog) {
+                Log.e(TAG, "mtu = " + mtu);
+            }
+            gatt.discoverServices();
         }
 
+        @SuppressLint("MissingPermission")
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
@@ -397,6 +397,7 @@ public class joyBlePrinter {
             msg.obj = "ConnectedCallback";
             msg.arg1 = 1;
             mainHandler.sendMessage(msg);
+
         }
 
         //@Override
@@ -667,7 +668,7 @@ public class joyBlePrinter {
             if (!bBuffFull) {
                 WriteData();
             } else {
-                int n = 15;
+                int n = 50;
                 while (bBuffFull) {
                     if (!isConnected()) {
                         return;

@@ -230,7 +230,7 @@ public class joyBlePrinterManager {
                 ScanFilter filter = new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString(sAdvServiceUUID)).build();
                 filters.add(filter);
 
-                ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
+                ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setReportDelay(0).build();
                 mScanner.startScan(filters, scanSettings, mScanCallback);
                 nResult = 0;
             }

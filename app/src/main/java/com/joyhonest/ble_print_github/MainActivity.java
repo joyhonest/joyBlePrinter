@@ -87,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         F_DispMessage("打印完成！", false);
                         HiddenmesageBox();
                     }
+                    if((nStatue & 0x04)!=0)
+                    {
+                        F_DispMessage("打印头过热！", false);
+                        HiddenmesageBox();
+                    }
                  /*
                  /*
                 Bit0：缺纸
@@ -163,19 +168,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void scanning_printer()
     {
         joyBlePrinterClient.joyBlePrinter_Init(getApplicationContext());
-        joyBlePrinterClient.naSetLog(true);
+        joyBlePrinterClient.joyBlePrinter_SetLogEnable(true);
 
-        blePrinterList.clear();
-        dataList.clear();
-        adapter.notifyDataSetChanged();
-        joyBlePrinterClient.joyBlePrinter_StartScan(new joyBlePrinterClient.joyBlePrinter_ScanningCallback() {
-            @Override
-            public void onFindPrinter(joyBlePrinter joyPrinter) {
+
+
+        if(!joyBlePrinterClient.joyBlePrinter_isScanning()) {
+            blePrinterList.clear();
+            dataList.clear();
+            adapter.notifyDataSetChanged();
+            joyBlePrinterClient.joyBlePrinter_StartScan(joyPrinter -> {
                 blePrinterList.add(joyPrinter);
-                dataList.add(joyPrinter.sName+" "+joyPrinter.sMacAddress);
+                dataList.add(joyPrinter.sName + " " + joyPrinter.sMacAddress);
                 adapter.notifyDataSetChanged();
-            }
-        },4);
+            }, 5);
+        }
     }
 
     @Override
@@ -225,9 +231,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-                Bitmap mBmp = BitmapFactory.decodeResource(this.getResources(), R.mipmap.person06);
-                joyBlePrinterClient.joyBlePrinter_SetBitbmp(mBmp, blattice,true);
-                joyBlePrinterClient.joyBlePrinter_StartPrintting(4);
+                Bitmap mBmp = BitmapFactory.decodeResource(this.getResources(), R.mipmap.qita01);
+                joyBlePrinterClient.joyBlePrinter_SetBitbmp(mBmp, blattice,false);
+                joyBlePrinterClient.joyBlePrinter_StartPrintting(2);
                 F_DispMessage("正在打印", false);
             }
             else

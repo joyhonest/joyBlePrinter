@@ -66,7 +66,8 @@ dependencies {
 //1.20     添加混淆
 //1.21     添加混淆
 //1.25     修改 图片处理，和iOS一致
+//1.26     修改 BLE扫描参数
 
-//git commit -m "1.25" -a
+//git commit -m "1.26" -a
 //git push -u origin main
 

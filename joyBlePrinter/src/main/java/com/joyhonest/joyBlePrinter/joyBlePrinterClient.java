@@ -97,6 +97,17 @@ public class joyBlePrinterClient {
 
 
 
+    public static boolean joyBlePrinter_isScanning()
+    {
+        if(blePrinterManager!=null)
+        {
+            return blePrinterManager.bScanning;
+        }
+        else
+        {
+            return false;
+        }
+    }
     public static int  joyBlePrinter_StartScan(joyBlePrinter_ScanningCallback callback,int nSec)
     {
          if(blePrinterManager!=null)
@@ -271,10 +282,7 @@ public class joyBlePrinterClient {
 
     }
 
-    public static  void naSetLog(boolean b)
-    {
-            joyBlePrinter.bLog = b;
-    }
+
 
 
     private static native int naSetBitbmpB(Bitmap bmp,boolean bPiont,boolean bRotate);
