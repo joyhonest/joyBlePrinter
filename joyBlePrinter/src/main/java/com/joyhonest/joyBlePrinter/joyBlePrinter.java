@@ -36,9 +36,9 @@ public class joyBlePrinter {
     private  int nPacklen = 200;
     private boolean bBuffFull = false;
 
-    private Handler mainHandler;
+    private final Handler mainHandler;
 
-    private int nTmp1 = 0;
+
 
 
     public int nPrinterValue = 4;
@@ -190,11 +190,7 @@ public class joyBlePrinter {
                     byte[] data1 = new byte[nLen];
                     System.arraycopy(mSentBuffer, mSentInx, data1, 0, nLen);
                     mSentInx += nLen;
-                    if (mSentInx >= mSentCount) {
-                        bNeedSent = false;
-                    } else {
-                        bNeedSent = true;
-                    }
+                    bNeedSent = mSentInx < mSentCount;
                     Write_characteristic.setValue(data1);
 
                     mGatt.writeCharacteristic(Write_characteristic);
@@ -211,6 +207,25 @@ public class joyBlePrinter {
     }
 
 
+    private void SentSentDataMsg()
+    {
+        Message msg = Message.obtain();
+        msg.obj = "StatusCallback1";
+        msg.arg1 = 0x90 & 0xff; //传输数据
+        msg.arg2 = 1;
+        msg.what = 0;
+        mainHandler.sendMessage(msg);
+    }
+
+    private void SentStartPrintingMsg()
+    {
+        Message msg = Message.obtain();
+        msg.obj = "StatusCallback1";
+        msg.arg1 = 0x80 & 0xff; //开始打印
+        msg.arg2 = 1;
+        msg.what = 0;
+        mainHandler.sendMessage(msg);
+    }
     public void onGetData(byte[] data, int nInx) {
         if (nInx == -8) {      //point
             int len = data.length;
@@ -220,12 +235,7 @@ public class joyBlePrinter {
             System.arraycopy(data, 0, m_data, 0, len);
             nStep = 0;
             F_Sendquality(0x33);
-            Message msg = Message.obtain();
-            msg.obj = "StatusCallback1";
-            msg.arg1 = 0x80 & 0xff; //开始打印
-            msg.arg2 = 1;
-            msg.what = 0;
-            mainHandler.sendMessage(msg);
+            SentStartPrintingMsg();
             return;
         }
         if (nInx == 0) {
@@ -246,13 +256,7 @@ public class joyBlePrinter {
             nLine = 0;
             nStep = 0;
             F_Sendquality(0x34);
-
-            Message msg = Message.obtain();
-            msg.obj = "StatusCallback1";
-            msg.arg1 = 0x80 & 0xff; //开始打印
-            msg.arg2 = 0;
-            msg.what = 0;
-            mainHandler.sendMessage(msg);
+            SentStartPrintingMsg();
             if (bLog) {
                 Log.e(TAG, "data is OK");
             }
@@ -333,9 +337,14 @@ public class joyBlePrinter {
             // boolean isSuccess = (status == BluetoothGatt.GATT_SUCCESS);
             if (isConnected) {
 
-                if(!gatt.requestMtu(nPacklen+3))
+                if(nPacklen>20) {
+                    if (!gatt.requestMtu(nPacklen + 3)) {
+                        nPacklen = 20;
+                    }
+                }
+                else
                 {
-                    nPacklen = 20;
+                    gatt.discoverServices();
                 }
                     //gatt.discoverServices();
 
@@ -371,7 +380,9 @@ public class joyBlePrinter {
             if(bLog) {
                 Log.e(TAG, "mtu = " + mtu);
             }
-            gatt.discoverServices();
+            if(nPacklen>20) {
+                gatt.discoverServices();
+            }
         }
 
         @SuppressLint("MissingPermission")
@@ -599,7 +610,6 @@ public class joyBlePrinter {
             mSentBuffer[55] = (byte) 0xff;
             mSentInx = 0;
             mSentCount = 56;
-            nTmp1 = 0;
             WriteData();
 
         }
@@ -646,7 +656,7 @@ public class joyBlePrinter {
         mSentBuffer[4] = 0x01;
         mSentBuffer[5] = 0x00;
         mSentBuffer[6] = 0x00;
-        mSentBuffer[7] = 00;
+        mSentBuffer[7] = 0;
         mSentBuffer[8] = (byte) 0xFF;
         mSentCount = 9;
         mSentInx = 0;
@@ -766,34 +776,38 @@ public class joyBlePrinter {
             }
             if (nStep == 6) {
                 nStep = 7;
+                Log.e(TAG,"test---111");
+                SystemClock.sleep(500);
+                Log.e(TAG,"test---222");
                 F_SetMovePage();
+                //SentStartPrintingMsg();
                 return;
             }
             if (nStep == 7) {
-                nStep = 8;
+                nStep = -1;
                 F_SetMovePage();
                 return;
             }
-            if (nStep == 8) {
-                nStep = 9;
-                setMotor_Value(0x19);
-                return;
-            }
-            if (nStep == 9) {
-                nStep = 10;
-                readBleStatusCmd();
-                return;
-            }
-            if (nStep == 10) {
-                nStep = 11;
-                readBleStatusCmd();    //多读几次
-                return;
-            }
-            if (nStep == 11) {
-                nStep = -1;
-                readBleStatusCmd();    //多读几次
-                return;
-            }
+//            if (nStep == 8) {
+//                nStep = 9;
+//                setMotor_Value(0x19);
+//                return;
+//            }
+//            if (nStep == 9) {
+//                nStep = 10;
+//                readBleStatusCmd(); //读取状态
+//                return;
+//            }
+//            if (nStep == 10) {
+//                nStep = 11;
+//                readBleStatusCmd();    //多读几次
+//                return;
+//            }
+//            if (nStep == 11) {
+//                nStep = -1;
+//                readBleStatusCmd();    //多读几次
+//                return;
+//            }
         }
     }
 

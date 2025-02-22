@@ -40,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Handler hiddenMesageBoxHandler;
 
 
+    private boolean bStartPrinting = false;
+
+
     List<joyBlePrinter>  blePrinterList;
     boolean blattice = true;
     @Override
@@ -82,10 +85,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 public void onPrinterStatus(int nStatue)
                 {
                     Log.e(TAG,"Status =  "+ nStatue);
-                    if(nStatue == 0)
+
+                        if (nStatue == 0) {
+                            if(bStartPrinting) {
+                                bStartPrinting = false;
+                                F_DispMessage("打印完成！", false);
+                                HiddenmesageBox();
+                            }
+                        }
+
+                    if(nStatue == 0x80)
                     {
-                        F_DispMessage("打印完成！", false);
-                        HiddenmesageBox();
+                        bStartPrinting = true;
+                    }
+                    if((nStatue & 0x0F)!=0)
+                    {
+                        bStartPrinting = false;
                     }
                     if((nStatue & 0x04)!=0)
                     {
@@ -231,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-                Bitmap mBmp = BitmapFactory.decodeResource(this.getResources(), R.mipmap.qita01);
+                Bitmap mBmp = BitmapFactory.decodeResource(this.getResources(), R.mipmap.plant03);
                 joyBlePrinterClient.joyBlePrinter_SetBitbmp(mBmp, blattice,false);
                 joyBlePrinterClient.joyBlePrinter_StartPrintting(2);
                 F_DispMessage("正在打印", false);
