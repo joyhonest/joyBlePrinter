@@ -68,8 +68,8 @@ dependencies {
 //1.25     修改 图片处理，和iOS一致
 //1.26     修改 BLE扫描参数
 //1.28
-//1.29     添加Yuv2Bitmap
+//1.30     添加Yuv2Bitmap
 
-//git commit -m "1.29" -a
+//git commit -m "1.30" -a
 //git push -u origin main
 
