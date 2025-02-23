@@ -289,6 +289,9 @@ public class joyBlePrinterClient {
     private static  native int naStartPrinting();
 
 
+    public static native  Bitmap yuv420toBitmap(byte []data,Bitmap bmp,int w,int h);
+
+
 
 
 }
