@@ -70,7 +70,8 @@ dependencies {
 //1.28
 //1.30     添加Yuv2Bitmap
 //1.31     点阵打印不添加20整除
+//1.32     点阵打印不添加20整除
 
-//git commit -m "1.31" -a
+//git commit -m "1.32" -a
 //git push -u origin main
 
