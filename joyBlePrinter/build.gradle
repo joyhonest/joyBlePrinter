@@ -69,7 +69,8 @@ dependencies {
 //1.26     修改 BLE扫描参数
 //1.28
 //1.30     添加Yuv2Bitmap
+//1.31     点阵打印不添加20整除
 
-//git commit -m "1.30" -a
+//git commit -m "1.31" -a
 //git push -u origin main
 
