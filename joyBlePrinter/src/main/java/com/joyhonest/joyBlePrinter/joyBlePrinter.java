@@ -44,6 +44,8 @@ public class joyBlePrinter {
 
     public boolean bLattice = true;
 
+    private int  nDelayMs = 5;
+
     private boolean bNeedSent = false;
     Context context;
     public String sName = "aaac";
@@ -73,7 +75,7 @@ public class joyBlePrinter {
 
     private List<byte[]> GrayDataList;
 
-    public static boolean bLog = true;
+    public static boolean bLog = false;
 
     private int nStatus = 0;
 
@@ -602,17 +604,21 @@ public class joyBlePrinter {
     }
 
 
+    public void F_SetnDelay(int nDelayMs)
+    {
+        this.nDelayMs = nDelayMs;
+    }
     private void F_SentGrayData_Line() {
 
         t2 = System.currentTimeMillis();
-        long da = t2-t1;
-        if(da<500)
-        {
-            if(bLog)
-            {
-                Log.e(TAG,"delay");
+        if(nDelayMs>0) {
+            long da = t2 - t1;
+            if (da < nDelayMs) {
+                if (bLog) {
+                    Log.e(TAG, "delay");
+                }
+                SystemClock.sleep(nDelayMs - da);
             }
-            SystemClock.sleep(500-da);
         }
         t1 = System.currentTimeMillis();
         mSentBuffer = GrayDataList.get(nLine);

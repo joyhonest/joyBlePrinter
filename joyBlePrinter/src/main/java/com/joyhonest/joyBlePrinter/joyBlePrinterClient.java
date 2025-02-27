@@ -284,6 +284,14 @@ public class joyBlePrinterClient {
 
 
 
+    public static void joyBlePrinter_SendDataDelay(int nMs)
+    {
+        if(mSelectedPrinter!=null)
+        {
+
+            mSelectedPrinter.F_SetnDelay(nMs);
+        }
+    }
 
     private static native int naSetBitbmpB(Bitmap bmp,boolean bPiont,boolean bRotate);
     private static  native int naStartPrinting();
