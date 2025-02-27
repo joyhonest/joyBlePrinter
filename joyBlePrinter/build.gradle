@@ -74,7 +74,7 @@ dependencies {
 //1.33     高宽都调整为8的倍数。
 //1.35     灰度图改为rtpc版本
 //1.35     灰度图改为rtpc版本
-
-//git commit -m "1.36" -a
+//1.38     灰度图改为rtpc版本
+//git commit -m "1.38" -a
 //git push -u origin main
 
