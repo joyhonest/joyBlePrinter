@@ -73,10 +73,12 @@ public class joyBlePrinter {
 
     private List<byte[]> GrayDataList;
 
-    public static boolean bLog = false;
+    public static boolean bLog = true;
 
     private int nStatus = 0;
 
+    long t1;
+    long t2;
     @SuppressLint("MissingPermission")
     public joyBlePrinter(Context context, BluetoothDevice device) {
 
@@ -203,6 +205,10 @@ public class joyBlePrinter {
 
     private void SentStartPrintingMsg() {
         Message msg = Message.obtain();
+        if(bLog)
+        {
+            Log.e(TAG,"strit pirnt");
+        }
         msg.obj = "StatusCallback1";
         msg.arg1 = 0x80 & 0xff; //开始打印
         msg.arg2 = 1;
@@ -239,7 +245,9 @@ public class joyBlePrinter {
             nLineCount = GrayDataList.size();
             nLine = 0;
             nStep = 0;
+            t1 = System.currentTimeMillis();
             F_Sendquality(0x34);
+
             SentStartPrintingMsg();
             if (bLog) {
                 Log.e(TAG, "data is OK");
@@ -593,8 +601,20 @@ public class joyBlePrinter {
 
     }
 
+
     private void F_SentGrayData_Line() {
 
+        t2 = System.currentTimeMillis();
+        long da = t2-t1;
+        if(da<500)
+        {
+            if(bLog)
+            {
+                Log.e(TAG,"delay");
+            }
+            SystemClock.sleep(500-da);
+        }
+        t1 = System.currentTimeMillis();
         mSentBuffer = GrayDataList.get(nLine);
         mSentInx = 0;
         mSentCount = mSentBuffer.length;
@@ -653,7 +673,7 @@ public class joyBlePrinter {
             if (!bBuffFull) {
                 WriteData();
             } else {
-                int n = 15;
+                int n = 30;
                 while (bBuffFull) {
                     if (!isConnected()) {
                         return;

@@ -72,7 +72,8 @@ dependencies {
 //1.31     点阵打印不添加20整除
 //1.32     点阵打印不添加20整除
 //1.33     高宽都调整为8的倍数。
+//1.34     灰度图改为rtpc版本
 
-//git commit -m "1.33" -a
+//git commit -m "1.34" -a
 //git push -u origin main
 
