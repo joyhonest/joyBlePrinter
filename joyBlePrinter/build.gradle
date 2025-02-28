@@ -74,7 +74,9 @@ dependencies {
 //1.33     高宽都调整为8的倍数。
 //1.35     灰度图改为rtpc版本
 //1.35     灰度图改为rtpc版本
-//1.38     灰度图改为rtpc版本
-//git commit -m "1.38" -a
+//1.38     灰度图改为rtpc版本 在I420转565中，加入抖动
+//1.39     添加停止打印，比如过热，开盖时，就要停止发送数据
+
+//git commit -m "1.39" -a
 //git push -u origin main
 

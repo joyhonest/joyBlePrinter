@@ -82,6 +82,7 @@ public class joyBlePrinterClient {
         {
             if(mSelectedPrinter.isConnected())
             {
+                mSelectedPrinter.StartPrinting();
                  mSelectedPrinter.nPrinterValue = nDensity;
                  return naStartPrinting();
             }
@@ -120,6 +121,17 @@ public class joyBlePrinterClient {
          }
     }
 
+    public static   void  joyBlePrinter_StopPrinting()
+    {
+        if(mSelectedPrinter!=null)
+        {
+            mSelectedPrinter.StopPrinting();
+        }
+        else
+        {
+
+        }
+    }
     public  static  int joyBlePrinter_StopScan()
     {
         if(blePrinterManager!=null)

@@ -170,6 +170,7 @@ public class joyBlePrinterManager {
 
 
 
+
     public int joyBlePrinterStopScaning() {
         if (!bScanning)
             return -3;

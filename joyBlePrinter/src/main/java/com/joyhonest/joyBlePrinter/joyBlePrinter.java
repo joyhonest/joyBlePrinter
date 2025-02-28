@@ -230,7 +230,8 @@ public class joyBlePrinter {
             SentStartPrintingMsg();
             return;
         }
-        if (nInx == 0) {
+        if (nInx == 0)
+        {
             GrayDataList.clear();
             GrayDataList.add(data);
             if (bLog)
@@ -673,7 +674,22 @@ public class joyBlePrinter {
     }
 
 
+
+    private boolean bCanSent = true;
+    public void  StopPrinting()
+    {
+        bCanSent = false;
+    }
+    public void  StartPrinting()
+    {
+        bCanSent = true;
+    }
     private void onWriteOK() {
+        if(!bCanSent) {
+            bNeedSent = false;
+            bBuffFull = false;
+            return;
+        }
         if (bNeedSent)    //超过蓝牙packlen，分包发送
         {
             if (!bBuffFull) {
@@ -682,6 +698,8 @@ public class joyBlePrinter {
                 int n = 30;
                 while (bBuffFull) {
                     if (!isConnected()) {
+                        bNeedSent = false;
+                        bBuffFull = false;
                         return;
                     }
                     SystemClock.sleep(100);
@@ -694,9 +712,6 @@ public class joyBlePrinter {
             }
             return;
         }
-
-        //if(bLattice)
-
 
         if (nStep == 0) {
             nStep = 1;
