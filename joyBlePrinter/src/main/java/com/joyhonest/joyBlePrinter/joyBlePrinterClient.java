@@ -213,28 +213,28 @@ public class joyBlePrinterClient {
 
     public interface  joyBlePrinter_StatusCallback
     {
-         void onConnectedStatus(int nStatus);
-        void onPrinterStatus(int nStatus);
+         void onConnectedStatus(int nStatus,String sMac);
+        void onPrinterStatus(int nStatus,String sMac);
     }
 
     public interface joyBlePrinter_getBatteryCallback
     {
-        void onGetBattery(int nBatter,int nSDSize);
+        void onGetBattery(int nBatter,int nSDSize,String sMac);
     }
     public interface joyBlePrinter_FirmwareVersionCallback
     {
-        void onGetFirmwareVersion(String SVer);
+        void onGetFirmwareVersion(String SVer,String sMac);
     }
 
     public interface  joyBlePrinter_AutoSleepTimeCallback
     {
-        void onGetAutoSleepTime(int nMin);
+        void onGetAutoSleepTime(int nMin,String sMac);
     }
 
 
     public interface  joyBlePrinter_isAvailableCallback
     {
-        void onIsAvailable(boolean b);
+        void onIsAvailable(boolean b,String sMac);
     }
 
 
@@ -276,12 +276,12 @@ public class joyBlePrinterClient {
     {
         if(mSelectedPrinter==null)
         {
-            callback.onIsAvailable(false);
+            callback.onIsAvailable(false,"");
             return;
         }
         if(!mSelectedPrinter.isConnected())
         {
-            callback.onIsAvailable(false);
+            callback.onIsAvailable(false, mSelectedPrinter.sMacAddress);
             return;
         }
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

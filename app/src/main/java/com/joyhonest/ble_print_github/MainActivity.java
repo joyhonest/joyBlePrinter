@@ -97,14 +97,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if(nStatue == 0x80)
                     {
                         bStartPrinting = true;
+                        F_DispMessage("开始打印", false);
                     }
                     if((nStatue & 0x0F)!=0)
                     {
                         bStartPrinting = false;
+                        joyBlePrinterClient.joyBlePrinter_StopPrinting();
                     }
                     if((nStatue & 0x04)!=0)
                     {
                         F_DispMessage("打印头过热！", false);
+                        HiddenmesageBox();
+                    }
+                    if((nStatue & 0x03)!=0)
+                    {
+                        F_DispMessage("打印头开盖或缺纸！", false);
                         HiddenmesageBox();
                     }
                  /*
@@ -246,10 +253,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-                Bitmap mBmp = BitmapFactory.decodeResource(this.getResources(), R.mipmap.test);
+                Bitmap mBmp = BitmapFactory.decodeResource(this.getResources(), R.mipmap.t02);
                 joyBlePrinterClient.joyBlePrinter_SetBitbmp(mBmp, blattice,false);
                 joyBlePrinterClient.joyBlePrinter_StartPrintting(2);
-                F_DispMessage("正在打印", false);
+                F_DispMessage("正处理数据", false);
             }
             else
             {
