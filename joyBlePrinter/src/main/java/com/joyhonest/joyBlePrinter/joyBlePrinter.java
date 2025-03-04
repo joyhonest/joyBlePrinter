@@ -786,17 +786,20 @@ public class joyBlePrinter {
     private void onWriteOK() {
         if(nStatus == 0x10)
             return;
+        if(!bCanSent)
+        {
+            bNeedSent = false;
+            bBuffFull = false;
+            nStep = -1;
+            return;
+        }
         if(!bWriteOK)
         {
             return;
         }
         bWriteOK = false;
 
-//        if(!bCanSent) {
-//            bNeedSent = false;
-//            bBuffFull = false;
-//            return;
-//        }
+
         int n = 55;
 //        boolean bd =true;
 //        boolean bfu = false;
