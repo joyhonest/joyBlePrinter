@@ -71,7 +71,6 @@ public class joyBlePrinterClient {
                 return mSelectedPrinter.Connect();
             }
             return 0;
-            //return mSelectedPrinter.Connect();
         }
         return  -1;
 

@@ -216,11 +216,24 @@ public class joyBlePrinter {
         mainHandler.sendMessage(msg);
     }
 
+    private void SentInUsb() {
+        Message msg = Message.obtain();
+        if(bLog)
+        {
+            Log.e(TAG,"inUsb printting");
+        }
+        msg.obj = "StatusCallback1";
+        msg.arg1 = 0x10 & 0xff; //开始打印
+        msg.arg2 = 1;
+        msg.what = 0;
+        mainHandler.sendMessage(msg);
+    }
+
     private void SentStartPrintingMsg() {
         Message msg = Message.obtain();
         if(bLog)
         {
-            Log.e(TAG,"strit pirnt");
+            Log.e(TAG,"Start printting");
         }
         msg.obj = "StatusCallback1";
         msg.arg1 = 0x80 & 0xff; //开始打印
@@ -231,6 +244,13 @@ public class joyBlePrinter {
 
     public void onGetData(byte[] data, int nInx) {
         if (nInx == -8) {      //point
+            if(nStatus == 0x10)
+            {
+                nStep = -1;
+                SentInUsb();
+                return;
+            }
+
             bWriteOK = false;
             int len = data.length;
             nLineCount = len / 48;
@@ -238,8 +258,10 @@ public class joyBlePrinter {
             m_data = new byte[len];
             System.arraycopy(data, 0, m_data, 0, len);
             nStep = 0;
-            F_Sendquality(0x33);
+           // F_Sendquality(0x33);
+            F_Android();
             SentStartPrintingMsg();
+
             return;
         }
         if (nInx == 0)
@@ -258,12 +280,20 @@ public class joyBlePrinter {
 
         if (nInx < 0)       //收到处理好的数据OK，开始打印机打印流程。
         {
+            if(nStatus == 0x10)
+            {
+                SentInUsb();
+                nStep = -1;
+                return;
+            }
             bWriteOK = false;
             nLineCount = GrayDataList.size();
             nLine = 0;
             nStep = 0;
             t1 = System.currentTimeMillis();
-            F_Sendquality(0x34);
+            //F_Sendquality(0x34);
+            F_Android();
+
             SentStartPrintingMsg();
             if (bLog) {
                 Log.e(TAG, "data is OK");
@@ -289,6 +319,26 @@ public class joyBlePrinter {
             }
         }
         return (byte) crc;
+    }
+
+
+    private void F_Android() {
+        //51 78 A4 00 01 00 33 99 FF
+        mSentBuffer = new byte[9];
+        mSentBuffer[0] = 0x51;
+        mSentBuffer[1] = 0x78;
+        mSentBuffer[2] = (byte) 0x93;
+        mSentBuffer[3] = 0x00;
+        mSentBuffer[4] = 0x01;
+        mSentBuffer[5] = 0x00;
+        mSentBuffer[6] = 0x00;   //Android
+        mSentBuffer[7] = crc_8(mSentBuffer, 6, 1);
+        mSentBuffer[8] = (byte) 0xFF;
+        mSentCount = 9;
+        mSentInx = 0;
+        WriteData();
+        if (bLog)
+            Log.e(TAG, "设定质量");
     }
 
     private void F_Sendquality(int n) {
@@ -502,8 +552,12 @@ public class joyBlePrinter {
         //if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED)
         {
             @SuppressLint("MissingPermission") BluetoothGatt gatt = bleDevice.connectGatt(context, false, bleCallback);
-            if (gatt != null)
+            if (gatt != null) {
+                if (bLog) {
+                    Log.e(TAG, "start connectting....");
+                }
                 gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
+            }
             return -100;
         }
 
@@ -605,6 +659,7 @@ public class joyBlePrinter {
     }
 
     private void setMotor_Value(int n) {
+
         mSentBuffer = new byte[20];
         mSentBuffer[0] = 0x51;
         mSentBuffer[1] = 0x78;
@@ -729,6 +784,8 @@ public class joyBlePrinter {
 
     private  volatile  boolean bWriteOK = false;
     private void onWriteOK() {
+        if(nStatus == 0x10)
+            return;
         if(!bWriteOK)
         {
             return;
@@ -870,6 +927,7 @@ public class joyBlePrinter {
         }
         if (nStep == 6) {
             nStep = 7;
+
             SystemClock.sleep(500);
             F_SetMovePage();
             return;

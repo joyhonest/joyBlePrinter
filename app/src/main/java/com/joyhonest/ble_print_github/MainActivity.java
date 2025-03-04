@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             joyBlePrinterClient.joyBlePrinter_SelectPrinter(blePrinterList.get(position), new joyBlePrinterClient.joyBlePrinter_StatusCallback() {
                 @Override
-                public void onConnectedStatus(int nStatus) {
+                public void onConnectedStatus(int nStatus,String sMac) {
                     if(nStatus == 1)   //已经连接
                     {
                         F_DispMessage("已经连接上打印机", false);
