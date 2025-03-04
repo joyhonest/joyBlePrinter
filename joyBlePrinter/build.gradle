@@ -1,10 +1,11 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.joyhonest'
 
 android {
-    namespace 'com.joyhonest.joybleprinter'
-    compileSdk 35
+//    namespace 'com.joyhonest.joybleprinter'
+//    compileSdk 35
+    compileSdkVersion 32
 
     defaultConfig {
         minSdk 24
@@ -77,8 +78,8 @@ dependencies {
 //1.38     灰度图改为rtpc版本 在I420转565中，加入抖动
 //1.39     添加停止打印，比如过热，开盖时，就要停止发送数据
 //1.40     写数据添加到线程中， 2025-03-01
-//1.41     增加设定为Android 快速模式， 2025-03-04
+//1.42     增加设定为Android 快速模式， 2025-03-04
 
-//git commit -m "1.41" -a
+//git commit -m "1.42" -a
 //git push -u origin main
 

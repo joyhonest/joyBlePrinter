@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     {
                         F_DispMessage("已经连接上打印机", false);
                         HiddenmesageBox();
-                        joyBlePrinterClient.joyBlePrinter_GetBlePrinterisAvailable(b -> Log.e(TAG,"data = "+b));
+                        joyBlePrinterClient.joyBlePrinter_GetBlePrinterisAvailable((b, sMac1) -> Log.e(TAG,"data = "+b));
                     }
                     if(nStatus <0)  //断开连接
                     {
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
                 @Override
-                public void onPrinterStatus(int nStatue)
+                public void onPrinterStatus(int nStatue,String sMac)
                 {
                     Log.e(TAG,"Status =  "+ nStatue);
 
