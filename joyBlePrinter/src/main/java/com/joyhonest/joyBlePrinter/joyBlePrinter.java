@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.NavigableSet;
 import java.util.UUID;
 
 public class joyBlePrinter {
@@ -233,7 +234,7 @@ public class joyBlePrinter {
         Message msg = Message.obtain();
         if(bLog)
         {
-            Log.e(TAG,"Start printting");
+            Log.e(TAG,"Start printing");
         }
         msg.obj = "StatusCallback1";
         msg.arg1 = 0x80 & 0xff; //开始打印
@@ -243,7 +244,12 @@ public class joyBlePrinter {
     }
 
     public void onGetData(byte[] data, int nInx) {
+        Log.e(TAG,"getData");
         if (nInx == -8) {      //point
+            if(bLog)
+            {
+                Log.e(TAG,"get print data");
+            }
             if(nStatus == 0x10)
             {
                 nStep = -1;
@@ -338,7 +344,7 @@ public class joyBlePrinter {
         mSentInx = 0;
         WriteData();
         if (bLog)
-            Log.e(TAG, "设定质量");
+            Log.e(TAG, "设定IOS OR Android ");
     }
 
     private void F_Sendquality(int n) {
@@ -409,6 +415,8 @@ public class joyBlePrinter {
                     Log.e(TAG, "connected");
             } else {
                 gatt.close();
+
+
                 mGatt = null;
                 isOk = false;
                 Write_characteristic = null;
@@ -417,20 +425,19 @@ public class joyBlePrinter {
                 boolean b = false;
                 //EventBus.getDefault().post(b,"onBlePrinterConnectedStatus");
 
+                if(joyBlePrinterClient.mSelectedPrinter!=null)
+                {
+                    if(joyBlePrinterClient.mSelectedPrinter.mGatt != mGatt)
+                    {
+                        return;
+                    }
+                }
+
                 Message msg = Message.obtain();
                 msg.obj = "ConnectedCallback";
                 msg.arg1 = -1;
                 mainHandler.sendMessage(msg);
-//                if (Statuscallback != null) {
-//                    Statuscallback.onConnectedStatus(-1);
-//                }
-
-                //if(writeThread.isAlive())
-                {
-                    bExitThread = true;
-                    //Log.e(TAG,"writeThread interrupt!");
-                    //writeThread.interrupt();
-                }
+                bExitThread = true;
 
             }
         }
@@ -784,8 +791,13 @@ public class joyBlePrinter {
 
     private  volatile  boolean bWriteOK = false;
     private void onWriteOK() {
-        if(nStatus == 0x10)
+
+        if(nStatus == 0x10) {
+            bNeedSent = false;
+            bBuffFull = false;
+            nStep = -1;
             return;
+        }
         if(!bCanSent)
         {
             bNeedSent = false;
@@ -800,16 +812,17 @@ public class joyBlePrinter {
         bWriteOK = false;
 
 
-        int n = 55;
+        int n = 50*10;
 //        boolean bd =true;
 //        boolean bfu = false;
         while (bBuffFull) {
-//            bfu = true;
-//            if(bd)
-//            {
-//                bd = false;
-////                Log.e(TAG,"data --- 1");
-//            }
+            if(!bCanSent)
+            {
+                bNeedSent = false;
+                bBuffFull = false;
+                nStep = -1;
+                break;
+            }
             SystemClock.sleep(100);
             n--;
             if(n==0) {
@@ -1016,6 +1029,10 @@ public class joyBlePrinter {
                         da[3] == 0x01)    //打印机状态返回
                 {
                     int Status = da[6];
+                    if((Status & 0x0F) !=0)
+                    {
+                        bCanSent = false;
+                    }
                     getAvailableHandle.removeCallbacksAndMessages(null);
                     if (bIsGetAvailable) {
                         bIsGetAvailable = false;
@@ -1038,11 +1055,11 @@ public class joyBlePrinter {
                     }
                     mainHandler.sendMessage(msg);
                     /*
-                    Bit0：缺纸
+                    ➢ Bit0：缺纸
                     ➢ Bit1：开盖
                     ➢ Bit2：过热
                     ➢ Bit3：缺电
-                    bit4 = UsB
+                    ➢ bit4 = USB
                     ➢ 0x03：缺纸+纸仓开
                     ➢ 0x80：正在打印
                     ➢ 0x00：空闲态
@@ -1110,6 +1127,22 @@ public class joyBlePrinter {
         mSentBuffer[0] = 0x51;
         mSentBuffer[1] = 0x78;
         mSentBuffer[2] = (byte) 0xA3;
+        mSentBuffer[3] = 0x00;
+        mSentBuffer[4] = 0x01;
+        mSentBuffer[5] = 0x00;
+        mSentBuffer[6] = 0x00;
+        mSentBuffer[7] = 0x00;
+        mSentBuffer[8] = (byte) 0xFF;
+        mSentCount = 9;
+        mSentInx = 0;
+        WriteData();
+    }
+
+    public void getDeviceSD_Battery() {
+        mSentBuffer = new byte[10];
+        mSentBuffer[0] = 0x51;
+        mSentBuffer[1] = 0x78;
+        mSentBuffer[2] = (byte) 0x94;
         mSentBuffer[3] = 0x00;
         mSentBuffer[4] = 0x01;
         mSentBuffer[5] = 0x00;

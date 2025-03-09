@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 public class joyBlePrinterClient {
 
     private static joyBlePrinterManager blePrinterManager = null;
-    private  static joyBlePrinter mSelectedPrinter = null;
+    public   static joyBlePrinter mSelectedPrinter = null;
 
 
 
@@ -145,6 +145,13 @@ public class joyBlePrinterClient {
 
     public static void joyBlePrinter_SelectPrinter(joyBlePrinter printer,joyBlePrinter_StatusCallback callback)
     {
+        if(mSelectedPrinter!=null)
+        {
+            if(mSelectedPrinter.isConnected())
+            {
+                mSelectedPrinter.Disconnect();
+            }
+        }
         mSelectedPrinter = printer;
         mSelectedPrinter.Statuscallback = callback;
     }
@@ -203,6 +210,7 @@ public class joyBlePrinterClient {
             return;
         mSelectedPrinter.getBatteryCallback = callback;
         mSelectedPrinter.getDeviceStatus();
+        //mSelectedPrinter.getDeviceSD_Battery();
     }
 
     public  interface joyBlePrinter_ScanningCallback
@@ -265,11 +273,14 @@ public class joyBlePrinterClient {
 //        {
 //            mPrintingCallback.onGetData(data,nInx);
 //        }
+        Log.e(TAG,"on get data java");
         if(mSelectedPrinter !=null)
         {
             mSelectedPrinter.onGetData(data,nInx);
         }
     }
+
+
 
     public static void joyBlePrinter_GetBlePrinterisAvailable(joyBlePrinter_isAvailableCallback callback)
     {
