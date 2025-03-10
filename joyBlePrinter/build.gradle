@@ -3,7 +3,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.joyhonest'
 
 android {
-    //namespace 'com.joyhonest.joybleprinter'
+//    namespace 'com.joyhonest.joybleprinter'
 //    compileSdk 35
     compileSdkVersion 32
 
@@ -81,8 +81,8 @@ dependencies {
 //1.40     写数据添加到线程中， 2025-03-01
 //1.43     增加设定为Android 快速模式， 2025-03-04
 //1.44     2025-03-10
-//1.45     2025-03-10  增加设置高度
+//1.46     2025-03-10  setBitmap 返回 设置图片高度。
 
-//git commit -m "1.45" -a
+//git commit -m "1.46" -a
 //git push -u origin main
 
