@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 Bitmap mBmp = BitmapFactory.decodeResource(this.getResources(), R.mipmap.t02);
                 joyBlePrinterClient.joyBlePrinter_SetBitbmp(mBmp, blattice,false);
-                joyBlePrinterClient.joyBlePrinter_StartPrintting(2);
+                joyBlePrinterClient.joyBlePrinter_StartPrinting(2);
                 F_DispMessage("正处理数据", false);
             }
             else
