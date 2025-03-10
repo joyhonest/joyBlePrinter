@@ -306,6 +306,7 @@ public class joyBlePrinterClient {
 
 
 
+
     public static void joyBlePrinter_SendDataDelay(int nMs)
     {
         if(mSelectedPrinter!=null)
@@ -318,6 +319,7 @@ public class joyBlePrinterClient {
     private static native int naSetBitbmpB(Bitmap bmp,boolean bPiont,boolean bRotate);
     private static  native int naStartPrinting();
 
+    public  static  native  void joyBlePrinter_SetMaxHeight(int nMaxHeight);
 
     //public static native  void yuv420toBitmap(byte []data,Bitmap bmp,int w,int h);
 
