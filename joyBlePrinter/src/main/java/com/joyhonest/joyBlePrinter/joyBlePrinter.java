@@ -414,31 +414,29 @@ public class joyBlePrinter {
                 if (bLog)
                     Log.e(TAG, "connected");
             } else {
+                boolean bSentDis=true;
+                if(joyBlePrinterClient.mSelectedPrinter!=null)
+                {
+                    if(joyBlePrinterClient.mSelectedPrinter.mGatt != gatt)
+                    {
+                        bSentDis = false;
+                    }
+                }
                 gatt.close();
-
-
                 mGatt = null;
                 isOk = false;
                 Write_characteristic = null;
                 if (bLog)
                     Log.e(TAG, "Dis-connected");
                 boolean b = false;
-                //EventBus.getDefault().post(b,"onBlePrinterConnectedStatus");
 
-                if(joyBlePrinterClient.mSelectedPrinter!=null)
-                {
-                    if(joyBlePrinterClient.mSelectedPrinter.mGatt != mGatt)
-                    {
-                        return;
-                    }
+                if(bSentDis) {
+                    Message msg = Message.obtain();
+                    msg.obj = "ConnectedCallback";
+                    msg.arg1 = -1;
+                    mainHandler.sendMessage(msg);
+                    bExitThread = true;
                 }
-
-                Message msg = Message.obtain();
-                msg.obj = "ConnectedCallback";
-                msg.arg1 = -1;
-                mainHandler.sendMessage(msg);
-                bExitThread = true;
-
             }
         }
 

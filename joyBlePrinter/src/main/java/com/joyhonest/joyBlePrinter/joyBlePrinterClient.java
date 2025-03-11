@@ -155,6 +155,7 @@ public class joyBlePrinterClient {
         }
         mSelectedPrinter = printer;
         mSelectedPrinter.Statuscallback = callback;
+
     }
 
     public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont,boolean bAutoRotate)
