@@ -82,7 +82,8 @@ dependencies {
 //1.43     增加设定为Android 快速模式， 2025-03-04
 //1.44     2025-03-10
 //1.48     2025-03-10  setBitmap 返回 设置图片高度。
+//1.50      修正ABGR-RBGA格式错误
 
-//git commit -m "1.48" -a
+//git commit -m "1.50" -a
 //git push -u origin main
 

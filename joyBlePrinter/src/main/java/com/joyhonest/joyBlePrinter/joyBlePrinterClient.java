@@ -147,9 +147,10 @@ public class joyBlePrinterClient {
     {
         if(mSelectedPrinter!=null)
         {
-            if(mSelectedPrinter.isConnected())
-            {
-                mSelectedPrinter.Disconnect();
+            if(printer != mSelectedPrinter) {
+                if (mSelectedPrinter.isConnected()) {
+                    mSelectedPrinter.Disconnect();
+                }
             }
         }
         mSelectedPrinter = printer;
