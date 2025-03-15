@@ -83,8 +83,8 @@ dependencies {
 //1.44     2025-03-10
 //1.48     2025-03-10  setBitmap 返回 设置图片高度。
 //1.51      修正ABGR-RBGA格式错误
-//1.52      修改浓度设置，直接设置数值
+//1.53      修改浓度设置，直接设置数值
 
-//git commit -m "1.52" -a
+//git commit -m "1.53" -a
 //git push -u origin main
 

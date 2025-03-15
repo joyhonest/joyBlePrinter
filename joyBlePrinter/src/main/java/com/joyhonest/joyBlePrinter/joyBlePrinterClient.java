@@ -78,11 +78,11 @@ public class joyBlePrinterClient {
     {
         if(mSelectedPrinter != null)
         {
+            mSelectedPrinter.nPrinterValue = nDensity;
             if(mSelectedPrinter.isConnected())
             {
                 mSelectedPrinter.StartPrinting();
-                 mSelectedPrinter.nPrinterValue = nDensity;
-                 return naStartPrinting();
+                return naStartPrinting();
             }
         }
         return  -1;
