@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -37,9 +38,10 @@ public class joyBlePrinterManager {
     private Context context;
     private BluetoothManager blManager;
     private BluetoothAdapter mBluetoothAdapter;
-    private List<BluetoothDevice> printerList;
+    private List<joyBlePrinter> printerList;
 
     private Handler handlerDelay;
+    private Handler handlerDelayScanning;
     private BluetoothLeScanner mScanner;
     volatile static joyBlePrinterManager singleton;
 
@@ -58,6 +60,9 @@ public class joyBlePrinterManager {
             Log.e("","no ble");
 
         }
+        printerList = new ArrayList<>();
+        handlerDelay = new Handler(context.getMainLooper());
+        handlerDelayScanning = new Handler(context.getMainLooper());
         blManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         if (blManager != null) {
             mBluetoothAdapter = blManager.getAdapter();
@@ -66,9 +71,19 @@ public class joyBlePrinterManager {
                     mScanner = mBluetoothAdapter.getBluetoothLeScanner();
                 }
             }
+            @SuppressLint("MissingPermission")
+            List<BluetoothDevice> connectedDevices = blManager.getConnectedDevices(BluetoothProfile.GATT);
+            if(connectedDevices!=null)
+            {
+                for(BluetoothDevice device :connectedDevices)
+                {
+
+                }
+            }
         }
-        printerList = new ArrayList<>();
-        handlerDelay = new Handler(context.getMainLooper());
+
+
+
     }
 
     public boolean isBleSupported() {
@@ -82,8 +97,8 @@ public class joyBlePrinterManager {
 
 
     private boolean findDevice(BluetoothDevice printer) {
-        for (BluetoothDevice printer1 : printerList) {
-            if (printer1.getAddress().equalsIgnoreCase(printer.getAddress())) {
+        for (joyBlePrinter printer1 : printerList) {
+            if (printer1.sMacAddress.equalsIgnoreCase(printer.getAddress())) {
                 return true;
             }
         }
@@ -124,8 +139,8 @@ public class joyBlePrinterManager {
 
                 }
                 if (!findDevice(device)) {
-                    printerList.add(device);
                     joyBlePrinter printer = new joyBlePrinter(context, device);
+                    printerList.add(printer);
                     //scanningCallback.onFindPrinter(printer);
                     Message msg = Message.obtain();
                     msg.obj = printer;
@@ -142,6 +157,7 @@ public class joyBlePrinterManager {
                     singleton = new joyBlePrinterManager();
                     if (singleton != null) {
                         singleton.setContext(context);
+
                     }
                 }
             }
@@ -152,26 +168,52 @@ public class joyBlePrinterManager {
 
     boolean bScanning = false;
 
-    public int joyBlePrinterStartScan(joyBlePrinterClient.joyBlePrinter_ScanningCallback callback, int nSec) {
-        if (bScanning)
-            return 0;
+    private void Scan(joyBlePrinterClient.joyBlePrinter_ScanningCallback callback, int nSec)
+    {
         int re = ScanBluePrinter();
-        if (re == 0) {
+        if (re == 0)
+        {
+            handlerDelay.removeCallbacksAndMessages(null);
             this.scanningCallback = callback;
-            if (nSec > 0) {
-                handlerDelay.removeCallbacksAndMessages(null);
-                if (bScanning) {
+            if (nSec > 0)
+            {
+                if (bScanning)
+                {
                     handlerDelay.postDelayed(this::joyBlePrinterStopScaning, 1000L * nSec);
                 }
             }
         }
-        return re;
+
+    }
+    public void joyBlePrinterStartScan(joyBlePrinterClient.joyBlePrinter_ScanningCallback callback, int nSec) {
+        if (bScanning) {
+            handlerDelayScanning.removeCallbacksAndMessages(null);
+
+            joyBlePrinterStopScaning();
+            handlerDelayScanning.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Scan(callback,nSec);
+                    if(joyBlePrinter.bLog)
+                            Log.e(TAG,"stop --- scanning");
+                }
+            },1200);
+        }
+        else
+        {
+            if(joyBlePrinter.bLog)
+                Log.e(TAG," --- scanning");
+            Scan(callback,nSec);
+        }
+
     }
 
 
 
 
     public int joyBlePrinterStopScaning() {
+
+        handlerDelay.removeCallbacksAndMessages(null);
         if (!bScanning)
             return -3;
         if(context == null) {
@@ -187,9 +229,16 @@ public class joyBlePrinterManager {
             if(daa == 0)
             {
                 bScanning = false;
-                handlerDelay.removeCallbacksAndMessages(null);
                 if (mScanner != null) {
                     mScanner.stopScan(mScanCallback);
+//                    for(joyBlePrinter printer : printerList)
+//                    {
+//                        if(printer.isConnected())
+//                        {
+//                            printer.Disconnect();
+//                        }
+//                    }
+                    printerList.clear();
                     SystemClock.sleep(150);
                     scanningCallback = null;
                 }
@@ -231,7 +280,7 @@ public class joyBlePrinterManager {
                 ScanFilter filter = new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString(sAdvServiceUUID)).build();
                 filters.add(filter);
 
-                ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setReportDelay(0).build();
+                ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setReportDelay(0).setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build();
                 mScanner.startScan(filters, scanSettings, mScanCallback);
                 nResult = 0;
             }

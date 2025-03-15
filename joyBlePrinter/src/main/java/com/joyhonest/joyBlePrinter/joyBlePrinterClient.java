@@ -4,10 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.util.Log;
-
-import java.nio.ByteBuffer;
 
 public class joyBlePrinterClient {
 
@@ -34,7 +31,8 @@ public class joyBlePrinterClient {
         }
     }
 
-    //private  static void joyBlePrinter_Init(Context context)
+    //public  static void joyBlePrinter_Init(Context context)
+    //public static void joyBlePrinter_Clear()
     //public static int  joyBlePrinter_StartScan(scanPrinterCallback callback,int nSec)
     //public static void joyBlePrinter_SelectPrinter(joyBlePrinter printer,joyBlePrinter_StatusCallback callback);
     //public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont,boolean bAutoRotate)  //bPiont = true 点阵  false 灰度 bAutoRotate  自动选择
@@ -47,6 +45,7 @@ public class joyBlePrinterClient {
     //public static  void joyBlePrinter_GetSDSize_Battery(joyBlePrinter_getBatteryCallback callback)
     //public static void joyBlePrinter_GetAutoSleepTime(joyBlePrinter_AutoSleepTimeCallback callback)
     //public static void joyBlePrinter_SetAutoSleepTime(int n)
+
 
 
     //firmwareVersionCallback
@@ -89,9 +88,16 @@ public class joyBlePrinterClient {
         return  -1;
     }
 
+
+    public static  void  joyBlePrinter_Clear()
+    {
+
+    }
     public   static void joyBlePrinter_Init(Context context)
     {
             blePrinterManager = joyBlePrinterManager.getInstance(context);
+        // 3. 获取已连接的BLE设备列表
+
     }
 
 
@@ -108,16 +114,13 @@ public class joyBlePrinterClient {
             return false;
         }
     }
-    public static int  joyBlePrinter_StartScan(joyBlePrinter_ScanningCallback callback,int nSec)
+    public static void joyBlePrinter_StartScan(joyBlePrinter_ScanningCallback callback, int nSec)
     {
          if(blePrinterManager!=null)
          {
-             return  blePrinterManager.joyBlePrinterStartScan(callback,nSec);
+              blePrinterManager.joyBlePrinterStartScan(callback,nSec);
          }
-         else
-         {
-             return -1;
-         }
+
     }
 
     public static   void  joyBlePrinter_StopPrinting()
@@ -167,6 +170,7 @@ public class joyBlePrinterClient {
         }
         else
         {
+            naSetBitbmpB(bmp,bPiont,bAutoRotate);
             return  -1;
         }
     }
@@ -228,7 +232,7 @@ public class joyBlePrinterClient {
 
     public interface joyBlePrinter_getBatteryCallback
     {
-        void onGetBattery(int nBatter,int nSDSize,String sMac);
+        void onGetBattery(int nBatter,int nSDSize,int nStatus,String sMac);
     }
     public interface joyBlePrinter_FirmwareVersionCallback
     {
@@ -275,7 +279,7 @@ public class joyBlePrinterClient {
 //        {
 //            mPrintingCallback.onGetData(data,nInx);
 //        }
-        Log.e(TAG,"on get data java");
+
         if(mSelectedPrinter !=null)
         {
             mSelectedPrinter.onGetData(data,nInx);
@@ -306,7 +310,7 @@ public class joyBlePrinterClient {
 
     }
 
-
+    public static native  void naSetJoyMode(boolean b);
 
 
     public static void joyBlePrinter_SendDataDelay(int nMs)
@@ -318,12 +322,16 @@ public class joyBlePrinterClient {
         }
     }
 
+
     private static native int naSetBitbmpB(Bitmap bmp,boolean bPiont,boolean bRotate);
     private static  native int naStartPrinting();
     //public  static  native  void joyBlePrinter_SetMaxHeight(int nMaxHeight);
 
     //public static native  void yuv420toBitmap(byte []data,Bitmap bmp,int w,int h);
 
+
+
+    public static native  void naTest();
 
 
 
