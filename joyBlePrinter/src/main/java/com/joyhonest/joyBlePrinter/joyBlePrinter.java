@@ -74,7 +74,7 @@ public class joyBlePrinter {
     UUID readUUID = UUID.fromString("0000ae02-0000-1000-8000-00805f9b34fb");
 
 
-    private Thread writeThread;
+    //private Thread writeThread;
     private List<byte[]> GrayDataList;
 
     public static boolean bLog = false;
@@ -83,7 +83,7 @@ public class joyBlePrinter {
 
     long t1;
     long t2;
-    private boolean bExitThread = false;
+ //   private boolean bExitThread = false;
     @SuppressLint("MissingPermission")
     public joyBlePrinter(Context context, BluetoothDevice device) {
 
@@ -261,7 +261,7 @@ public class joyBlePrinter {
                 return;
             }
 
-            bWriteOK = false;
+            //bWriteOK = false;
             int len = data.length;
             nLineCount = len / 48;
             nLine = 0;
@@ -276,7 +276,7 @@ public class joyBlePrinter {
         }
         if (nInx == 0)
         {
-            bWriteOK = false;
+            //bWriteOK = false;
             GrayDataList.clear();
             GrayDataList.add(data);
             if (bLog)
@@ -296,7 +296,7 @@ public class joyBlePrinter {
                 nStep = -1;
                 return;
             }
-            bWriteOK = false;
+            //bWriteOK = false;
             nLineCount = GrayDataList.size();
             nLine = 0;
             nStep = 0;
@@ -435,7 +435,7 @@ public class joyBlePrinter {
                     msg.obj = "ConnectedCallback";
                     msg.arg1 = -1;
                     mainHandler.sendMessage(msg);
-                    bExitThread = true;
+                  //  bExitThread = true;
                 }
             }
         }
@@ -464,6 +464,9 @@ public class joyBlePrinter {
             nStep = -1;
             BluetoothGattService service = mGatt.getService(ServiceUUID);
             Write_characteristic = service.getCharacteristic(writeUUID);
+            if ((Write_characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE) != 0) {
+                Write_characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
+            }
             BluetoothGattCharacteristic notifyCharacteristic = service.getCharacteristic(readUUID);
             boolean bRe = enableNotification(mGatt, true, notifyCharacteristic);//注册Notify通知
 
@@ -471,25 +474,6 @@ public class joyBlePrinter {
             msg.obj = "ConnectedCallback";
             msg.arg1 = 1;
             mainHandler.sendMessage(msg);
-
-            bExitThread = false;
-            writeThread =  new Thread(() -> {
-                if(bLog)
-                {
-                    Log.e(TAG,"writeThread start");
-                }
-                while (!bExitThread)
-                {
-                    onWriteOK();
-                }
-                if(bLog)
-                {
-                    Log.e(TAG,"writeThread exit");
-                }
-
-            });
-            writeThread.start();
-
 
         }
 
@@ -504,8 +488,13 @@ public class joyBlePrinter {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
-            //onWriteOK();
-            bWriteOK = true;
+            // 使⽤匿名类创建 Thread ⼦类对象
+             new Thread() {
+                @Override
+                public void run() {
+                    onWriteOK();
+                }
+            }.start();
         }
 
         @Override
@@ -822,7 +811,7 @@ public class joyBlePrinter {
     }
 
 
-    private  volatile  boolean bWriteOK = false;
+    //private  volatile  boolean bWriteOK = false;
     private void onWriteOK() {
 
         if(nStatus == 0x10 || (nStatus & 0x0F) !=0 ) {
@@ -838,11 +827,11 @@ public class joyBlePrinter {
             nStep = -1;
             return;
         }
-        if(!bWriteOK)
-        {
-            return;
-        }
-        bWriteOK = false;
+//        if(!bWriteOK)
+//        {
+//            return;
+//        }
+//        bWriteOK = false;
 
 
         int n = 50*10;
@@ -1062,7 +1051,7 @@ public class joyBlePrinter {
                         da[3] == 0x01)    //打印机状态返回
                 {
                     int Status = da[6];
-                    Log.e(TAG,"status AAAAA = " + Status);
+                    Log.e(TAG,"status AAAAA = " + (Status & 0xff));
                     if((Status & 0x0F) !=0)
                     {
                         bCanSent = false;
@@ -1168,18 +1157,7 @@ public class joyBlePrinter {
         mSentBuffer[7] = 0x00;
         mSentBuffer[8] = (byte) 0xFF;
 
-        mSentBuffer[9] = 0x51;
-        mSentBuffer[10] = 0x78;
-        mSentBuffer[11] = (byte) 0xA3;
-        mSentBuffer[12] = 0x00;
-        mSentBuffer[13] = 0x01;
-        mSentBuffer[14] = 0x00;
-        mSentBuffer[15] = 0x00;
-        mSentBuffer[16] = 0x00;
-        mSentBuffer[17] = (byte) 0xFF;
-
-
-        mSentCount = 18;
+        mSentCount = 9;
         mSentInx = 0;
         WriteData();
     }

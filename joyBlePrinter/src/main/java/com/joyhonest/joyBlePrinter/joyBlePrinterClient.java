@@ -37,7 +37,7 @@ public class joyBlePrinterClient {
     //public static void joyBlePrinter_SelectPrinter(joyBlePrinter printer,joyBlePrinter_StatusCallback callback);
     //public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont,boolean bAutoRotate)  //bPiont = true 点阵  false 灰度 bAutoRotate  自动选择
     //public static  int  joyBlePrinter_Connect()
-    //joyBlePrinter_isConnected();
+    //public static  joyBlePrinter_isConnected();
     //public static  int  joyBlePrinter_StartPrinting()
     //public static  int  joyBlePrinter_StopScan()
 
@@ -91,7 +91,10 @@ public class joyBlePrinterClient {
 
     public static  void  joyBlePrinter_Clear()
     {
-
+            if(mSelectedPrinter!=null)
+            {
+                mSelectedPrinter.Disconnect();
+            }
     }
     public   static void joyBlePrinter_Init(Context context)
     {
