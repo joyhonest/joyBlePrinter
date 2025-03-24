@@ -3,7 +3,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.joyhonest'
 
 android {
-    //namespace 'com.joyhonest.joybleprinter'
+//    namespace 'com.joyhonest.joybleprinter'
 //    compileSdk 35
     compileSdkVersion 32
 
@@ -85,7 +85,8 @@ dependencies {
 //1.51      修正ABGR-RBGA格式错误
 //1.53      修改浓度设置，直接设置数值
 //1.54      2025-03-20
+//1.55      2025-03-24   //修正客户版本SDK算法为 理工算法
 
-//git commit -m "1.54" -a
+//git commit -m "1.55" -a
 //git push -u origin main
 

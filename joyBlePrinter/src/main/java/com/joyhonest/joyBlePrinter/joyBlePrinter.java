@@ -33,7 +33,7 @@ import java.util.NavigableSet;
 import java.util.UUID;
 
 public class joyBlePrinter {
-    private final String TAG = "joyBlePrinter";
+    //private final String TAG = "joyBlePrinter";
     private int nPacklen = 200;
     private  volatile boolean bBuffFull = false;
 
@@ -41,6 +41,7 @@ public class joyBlePrinter {
 
 
     public int nPrinterValue = 0x1b58;
+    public int nPrinterLevel = 2;
 
 
     public boolean bLattice = true;
@@ -78,6 +79,7 @@ public class joyBlePrinter {
     private List<byte[]> GrayDataList;
 
     public static boolean bLog = false;
+    public static String  TAG = "JoyBlePrinter";
 
     private int nStatus = 0;
 
@@ -224,10 +226,7 @@ public class joyBlePrinter {
 
     private void SentInUsb() {
         Message msg = Message.obtain();
-        if(bLog)
-        {
-            Log.e(TAG,"inUsb printting");
-        }
+
         msg.obj = "StatusCallback1";
         msg.arg1 = 0x10 & 0xff; //开始打印
         msg.arg2 = 1;
@@ -239,7 +238,7 @@ public class joyBlePrinter {
         Message msg = Message.obtain();
         if(bLog)
         {
-            Log.e(TAG,"Start printing");
+            Log.d(TAG,"Start printing");
         }
         msg.obj = "StatusCallback1";
         msg.arg1 = 0x80 & 0xff; //开始打印
@@ -252,7 +251,7 @@ public class joyBlePrinter {
         if (nInx == -8) {      //point
             if(bLog)
             {
-                Log.e(TAG,"get print data");
+                Log.d(TAG,"get data");
             }
             if(nStatus == 0x10)
             {
@@ -280,12 +279,12 @@ public class joyBlePrinter {
             GrayDataList.clear();
             GrayDataList.add(data);
             if (bLog)
-                Log.e(TAG, "data start----");
+                Log.d(TAG, "data start----");
         }
         if (nInx == 1) {
             GrayDataList.add(data);
             if (bLog)
-                Log.e(TAG, "data ----");
+                Log.d(TAG, "data ----");
         }
 
         if (nInx < 0)       //收到处理好的数据OK，开始打印机打印流程。
@@ -306,7 +305,7 @@ public class joyBlePrinter {
 
             SentStartPrintingMsg();
             if (bLog) {
-                Log.e(TAG, "data is OK");
+                Log.d(TAG, "data is OK");
             }
 
         }
@@ -348,7 +347,7 @@ public class joyBlePrinter {
         mSentInx = 0;
         WriteData();
         if (bLog)
-            Log.e(TAG, "设定IOS OR Android ");
+            Log.d(TAG, "设定IOS OR Android ");
     }
 
     private void F_Sendquality(int n) {
@@ -367,7 +366,7 @@ public class joyBlePrinter {
         mSentInx = 0;
         WriteData();
         if (bLog)
-            Log.e(TAG, "设定质量");
+            Log.d(TAG, "设定质量");
     }
 
 
@@ -412,7 +411,7 @@ public class joyBlePrinter {
                     gatt.discoverServices();
                 }
                 if (bLog)
-                    Log.e(TAG, "connected");
+                    Log.d(TAG, "connected");
             } else {
                 boolean bSentDis=true;
                 if(joyBlePrinterClient.mSelectedPrinter!=null)
@@ -426,8 +425,10 @@ public class joyBlePrinter {
                 mGatt = null;
                 isOk = false;
                 Write_characteristic = null;
-                if (bLog)
-                    Log.e(TAG, "Dis-connected");
+                if(bLog)
+                {
+                    Log.d(TAG,"ble disconnected");
+                }
                 boolean b = false;
 
                 if(bSentDis) {
@@ -445,9 +446,9 @@ public class joyBlePrinter {
         @Override
         public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
             super.onMtuChanged(gatt, mtu, status);
-            if (bLog) {
-                Log.e(TAG, "mtu = " + mtu);
-            }
+//            if (bLog) {
+//                Log.d(TAG, "mtu = " + (mtu-3));
+//            }
             if (nPacklen > 20) {
                 gatt.discoverServices();
             }
@@ -458,7 +459,7 @@ public class joyBlePrinter {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             super.onServicesDiscovered(gatt, status);
             if (bLog)
-                Log.e(TAG, "connected 11");
+                Log.d(TAG, "connected 11");
             mGatt = gatt;
             isOk = true;
             nStep = -1;
@@ -513,6 +514,7 @@ public class joyBlePrinter {
             {
                 mGatt.disconnect();
                 mGatt.close();
+
             }
         }
     }
@@ -549,7 +551,7 @@ public class joyBlePrinter {
             @SuppressLint("MissingPermission") BluetoothGatt gatt = bleDevice.connectGatt(context, false, bleCallback);
             if (gatt != null) {
                 if (bLog) {
-                    Log.e(TAG, "start connectting....");
+                    Log.d(TAG, "start connectting....");
                 }
                 gatt.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH);
             }
@@ -558,98 +560,61 @@ public class joyBlePrinter {
 
     }
 
-    //设置打印浓度
-    private void setConcentration_Value(int n) {
-        //0x19c8 0x20d0 0x27d8 0x2ee0 0x35e8 0x3cf0 0x43f8
-//        if (n < 0) {
-//            n = 0;
-//        }
-//        if (n > 4) {
-//            n = 4;
-//        }
 
-        mSentBuffer = new byte[20];
+//    //打印浓度
+//    private void setConcentration_ValueNew(int n) {
+//        mSentBuffer = new byte[20];
+//        mSentBuffer[0] = 0x51;
+//        mSentBuffer[1] = 0x78;
+//        mSentBuffer[2] = (byte) 0xAF;
+//        mSentBuffer[3] = 0x00;
+//        mSentBuffer[4] = 0x02;
+//        mSentBuffer[5] = 0x00;
+//        mSentBuffer[6] = (byte)(n & 0xff);
+//        mSentBuffer[7] = (byte)((n>>8) & 0xff);
+//
+//        mSentBuffer[8] = (byte) crc_8(mSentBuffer, 6, 2);
+//        mSentBuffer[9] = (byte) 0xff;
+//        mSentCount = 10;
+//        mSentInx = 0;
+//        if (bLog)
+//            Log.d(TAG, "设定浓度---!");
+//        WriteData();
+//    }
+    //设置打印浓度
+    private void setConcentration_Value() {
+        //0x19c8 0x20d0 0x27d8 0x2ee0 0x35e8 0x3cf0 0x43f8
+
+        mSentBuffer = new byte[40];
         mSentBuffer[0] = 0x51;
         mSentBuffer[1] = 0x78;
         mSentBuffer[2] = (byte) 0xAF;
         mSentBuffer[3] = 0x00;
         mSentBuffer[4] = 0x02;
         mSentBuffer[5] = 0x00;
-        mSentBuffer[6] = (byte)(n & 0xff);
-        mSentBuffer[7] = (byte)((n>>8) & 0xff);
-/*
-        if (bLattice) {
-//            if (n == 0) {
-//                mSentBuffer[6] = (byte) 0xc8;
-//                mSentBuffer[7] = (byte) 0x19;
-//            }
-//            if (n == 1) {
-//                mSentBuffer[6] = (byte) 0xd8;
-//                mSentBuffer[7] = (byte) 0x27;
-//            }
-//            if (n == 2) {
-//                mSentBuffer[6] = (byte) 0xe0;
-//                mSentBuffer[7] = (byte) 0x2e;
-//            }
-//            if (n == 3) {
-//                mSentBuffer[6] = (byte) 0xe8;
-//                mSentBuffer[7] = (byte) 0x35;
-//            }
-//            if (n == 4) {
-//                mSentBuffer[6] = (byte) 0xf8;
-//                mSentBuffer[7] = (byte) 0x43;
-//            }
-            if (n == 0) {
-                mSentBuffer[6] = (byte) 0xc8;
-                mSentBuffer[7] = (byte) 0x05;
-            }
-            if (n == 1) {
-                mSentBuffer[6] = (byte) 0xc8;
-                mSentBuffer[7] = (byte) 0x10;
-            }
-            if (n == 2) {
-                mSentBuffer[6] = (byte) 0xc8;
-                mSentBuffer[7] = (byte) 0x19;
-            }
-            if (n == 3) {
-                mSentBuffer[6] = (byte) 0xc8;
-                mSentBuffer[7] = (byte) 0x35;
-            }
-            if (n == 4) {
-                mSentBuffer[6] = (byte) 0xf8;
-                mSentBuffer[7] = (byte) 0x45;
-            }
-        } else {
-            //0x0f0a，0x1324，0x1b58，0X238C，0x27A6
-            if (n == 0) {
-
-                mSentBuffer[6] = (byte) 0x20;
-                mSentBuffer[7] = (byte) 0x10;
-            }
-            if (n == 1) {
-                mSentBuffer[6] = (byte) 0x24;
-                mSentBuffer[7] = (byte) 0x13;
-            }
-            if (n == 2) {
-                mSentBuffer[6] = (byte) 0x58;
-                mSentBuffer[7] = (byte) 0x1b;
-            }
-            if (n == 3) {
-                mSentBuffer[6] = (byte) 0x8c;
-                mSentBuffer[7] = (byte) 0x23;
-            }
-            if (n == 4) {
-                mSentBuffer[6] = (byte) 0xa6;
-                mSentBuffer[7] = (byte) 0x27;
-            }
-        }
-*/
+        mSentBuffer[6] = (byte)(nPrinterValue & 0xff);
+        mSentBuffer[7] = (byte)((nPrinterValue>>8) & 0xff);
         mSentBuffer[8] = (byte) crc_8(mSentBuffer, 6, 2);
         mSentBuffer[9] = (byte) 0xff;
+
+
+//        mSentBuffer[10] = 0x51;
+//        mSentBuffer[11] = 0x78;
+//        mSentBuffer[12] = (byte) 0xAF;
+//        mSentBuffer[13] = 0x00;
+//        mSentBuffer[14] = 0x02;
+//        mSentBuffer[15] = 0x00;
+//        mSentBuffer[16] = (byte)(nPrinterLevel & 0xff);
+//        mSentBuffer[17] = (byte)((nPrinterLevel>>8) & 0xff);
+//        mSentBuffer[18] = (byte) crc_8(mSentBuffer, 16, 2);
+//        mSentBuffer[19] = (byte) 0xff;
+
+
+
         mSentCount = 10;
         mSentInx = 0;
         if (bLog)
-            Log.e(TAG, "设定浓度!");
+            Log.d(TAG, "设定浓度--!");
         WriteData();
     }
 
@@ -672,7 +637,7 @@ public class joyBlePrinter {
         mSentCount = 10;
         WriteData();
         if (bLog)
-            Log.e(TAG, "设定打印速度");
+            Log.d(TAG, "设定打印速度");
     }
 
     private void setMotor_Value(int n) {
@@ -691,7 +656,7 @@ public class joyBlePrinter {
         mSentCount = 9;
         mSentInx = 0;
         if (bLog)
-            Log.e(TAG, "设定马达速度!");
+            Log.d(TAG, "设定马达速度!");
         WriteData();
     }
 
@@ -729,7 +694,7 @@ public class joyBlePrinter {
             long da = t2 - t1;
             if (da < nDelayMs) {
                 if (bLog) {
-                    Log.e(TAG, "delay gray");
+                    Log.d(TAG, "delay gray");
                 }
                 SystemClock.sleep(nDelayMs - da);
             }
@@ -740,7 +705,7 @@ public class joyBlePrinter {
         mSentCount = mSentBuffer.length;
         WriteData();
         if (bLog)
-            Log.e(TAG, "Send GrayLie " + nLine);
+            Log.d(TAG, "Send GrayLie " + nLine);
 
     }
 
@@ -760,7 +725,7 @@ public class joyBlePrinter {
         mSentCount = 10;
         WriteData();
         if (bLog)
-            Log.e(TAG, "走纸");
+            Log.d(TAG, "走纸");
     }
 
     public void readBleStatusCmd() {
@@ -790,7 +755,7 @@ public class joyBlePrinter {
         mSentInx = 0;
         WriteData();
         if (bLog)
-            Log.e(TAG, "获取状态");
+            Log.d(TAG, "获取状态");
         //SystemClock.sleep(100);
     }
 
@@ -850,13 +815,13 @@ public class joyBlePrinter {
             if(n==0) {
                 if(bLog)
                 {
-                    Log.e(TAG,"time over");
+                    Log.d(TAG,"time over");
                 }
                 break;
             }
         }
 //        if(bfu) {
-//  //          Log.e(TAG, "data --- 2");
+//  //          Log.d(TAG, "data --- 2");
 //        }
         if (bNeedSent)    //超过蓝牙packlen，分包发送
         {
@@ -865,7 +830,7 @@ public class joyBlePrinter {
         }
         if (nStep == 0) {
             nStep = 1;
-            setConcentration_Value(nPrinterValue);
+            setConcentration_Value();
             return;
 
         }
@@ -887,9 +852,9 @@ public class joyBlePrinter {
             if (nStep == 3) {
                 nStep = 4;
                 F_SendLine(m_data, nLine++);
-                if (bLog) {
-                    Log.e(TAG, "seng nLne = " + nLine);
-                }
+//                if (bLog) {
+//                    Log.d(TAG, "sent nLne = " + nLine);
+//                }
                 return;
             }
             if (nStep == 4) {
@@ -897,15 +862,14 @@ public class joyBlePrinter {
                 {
                     nStep = 5;
                     setMotor_Value(0x14);
-//                    SystemClock.sleep(500);
-//                    if(bLog)
-//                        Log.e(TAG,"delay !!!");
-                } else {
+                }
+                else
+                {
                     if (nLine < nLineCount) {
                         F_SendLine(m_data, nLine++);
-                        if (bLog) {
-                            Log.e(TAG, "seng nLne = " + nLine);
-                        }
+//                        if (bLog) {
+//                            Log.e(TAG, "seng nLne = " + nLine);
+//                        }
                     } else {
                         nStep = 6;
                         setMotor_Value(0x14);
@@ -935,7 +899,6 @@ public class joyBlePrinter {
                 return;
             }
             if (nStep == 3) {
-                //发送 灰度数据
                 nStep = 4;
                 setMotor_Value(0x28);
                 return;
@@ -945,27 +908,14 @@ public class joyBlePrinter {
                 nStep = 3;
                 F_SentGrayData_Line();
                 nLine++;
-
-
                 if (nLine == nLineCount) {
                     nStep = 6;
                 }
-
-//                if((nLine % 20) == 0 && nStep !=6)      //20*20 行停0.6S发送
-//                {
-//                    SystemClock.sleep(1500);
-//                    if(bLog)
-//                    {
-//                        Log.e(TAG,"delay 123");
-//                    }
-//                }
-
                 return;
             }
         }
         if (nStep == 6) {
             nStep = 7;
-
             SystemClock.sleep(500);
             F_SetMovePage();
             return;
@@ -1008,7 +958,7 @@ public class joyBlePrinter {
                     str.append(ss).append(" ");
                 }
 
-                Log.e(TAG, str.toString());
+                Log.d(TAG, "onRead: "+str.toString());
             }
 
             if (da.length >= 9) {
@@ -1051,7 +1001,8 @@ public class joyBlePrinter {
                         da[3] == 0x01)    //打印机状态返回
                 {
                     int Status = da[6];
-                    Log.e(TAG,"status AAAAA = " + (Status & 0xff));
+
+                    //Log.d(TAG,"status AAAAA = " + (Status & 0xff));
                     if((Status & 0x0F) !=0)
                     {
                         bCanSent = false;
@@ -1098,10 +1049,10 @@ public class joyBlePrinter {
                     if (da[6] != 0) {
                         bBuffFull = true;
                         if (bLog)
-                            Log.e(TAG, "data full");
+                            Log.d(TAG, "data full");
                     } else {
                         if (bLog)
-                            Log.e(TAG, "data empty");
+                            Log.d(TAG, "data empty");
                         bBuffFull = false;
                     }
 
@@ -1241,5 +1192,6 @@ public class joyBlePrinter {
         mSentCount = 9;
         mSentInx = 0;
         WriteData();
+
     }
 }

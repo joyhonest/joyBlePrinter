@@ -36,15 +36,15 @@ public class joyBlePrinterClient {
     //public static int  joyBlePrinter_StartScan(scanPrinterCallback callback,int nSec)
     //public static void joyBlePrinter_SelectPrinter(joyBlePrinter printer,joyBlePrinter_StatusCallback callback);
     //public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont,boolean bAutoRotate)  //bPiont = true 点阵  false 灰度 bAutoRotate  自动选择
-    //public static  int  joyBlePrinter_Connect()
+    //public static  int  joyBlePrinter_Connect();
     //public static  joyBlePrinter_isConnected();
-    //public static  int  joyBlePrinter_StartPrinting()
-    //public static  int  joyBlePrinter_StopScan()
+    //public static  int  joyBlePrinter_StartPrinting();
+    //public static  int  joyBlePrinter_StopScan();
 
-    //public static  void joyBlePrinter_GetFirmwareVersion(joyBlePrinter_FirmwareVersionCallback callback)
-    //public static  void joyBlePrinter_GetSDSize_Battery(joyBlePrinter_getBatteryCallback callback)
-    //public static void joyBlePrinter_GetAutoSleepTime(joyBlePrinter_AutoSleepTimeCallback callback)
-    //public static void joyBlePrinter_SetAutoSleepTime(int n)
+    //public static  void joyBlePrinter_GetFirmwareVersion(joyBlePrinter_FirmwareVersionCallback callback);
+    //public static  void joyBlePrinter_GetSDSize_Battery(joyBlePrinter_getBatteryCallback callback);
+    //public static void joyBlePrinter_GetAutoSleepTime(joyBlePrinter_AutoSleepTimeCallback callback);
+    //public static void joyBlePrinter_SetAutoSleepTime(int n);
 
 
 
@@ -88,6 +88,21 @@ public class joyBlePrinterClient {
         return  -1;
     }
 
+    public static  int  joyBlePrinter_StartPrintingNew(int nDensity,int nLevel)
+    {
+        if(mSelectedPrinter != null)
+        {
+            mSelectedPrinter.nPrinterValue = nDensity;
+            mSelectedPrinter.nPrinterLevel = nLevel;
+            if(mSelectedPrinter.isConnected())
+            {
+                mSelectedPrinter.StartPrinting();
+                return naStartPrinting();
+            }
+        }
+        return  -1;
+    }
+
 
     public static  void  joyBlePrinter_Clear()
     {
@@ -119,9 +134,21 @@ public class joyBlePrinterClient {
     }
     public static void joyBlePrinter_StartScan(joyBlePrinter_ScanningCallback callback, int nSec)
     {
+         if(joyBlePrinter.bLog)
+         {
+             Log.d(joyBlePrinter.TAG,"start scanning");
+         }
          if(blePrinterManager!=null)
          {
+
               blePrinterManager.joyBlePrinterStartScan(callback,nSec);
+         }
+         else
+         {
+             if(joyBlePrinter.bLog)
+             {
+                 Log.d(joyBlePrinter.TAG,"blePrinterManager is null, please call init first");
+             }
          }
 
     }
@@ -313,7 +340,8 @@ public class joyBlePrinterClient {
 
     }
 
-    public static native  void naSetJoyMode(boolean b);
+
+    public static native  void naSetJoyMode(String  str);
 
 
     public static void joyBlePrinter_SendDataDelay(int nMs)

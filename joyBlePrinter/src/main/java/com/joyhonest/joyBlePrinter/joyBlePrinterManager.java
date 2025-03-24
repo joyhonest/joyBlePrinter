@@ -34,7 +34,7 @@ import java.util.UUID;
 
 public class joyBlePrinterManager {
 
-    private final String TAG = "joyBlePrinterManager";
+    //private final String TAG = "joyBlePrinterManager";
     private Context context;
     private BluetoothManager blManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -43,7 +43,9 @@ public class joyBlePrinterManager {
     private Handler handlerDelay;
     private Handler handlerDelayScanning;
     private BluetoothLeScanner mScanner;
+    @SuppressLint("StaticFieldLeak")
     volatile static joyBlePrinterManager singleton;
+
 
     UUID advServiceUUID = UUID.fromString("0000af30-0000-1000-8000-00805f9b34fb");
     String sAdvServiceUUID = "0000af30-0000-1000-8000-00805f9b34fb";
@@ -57,7 +59,9 @@ public class joyBlePrinterManager {
     public void setContext(Context context) {
         this.context = context.getApplicationContext();
         if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Log.e("","no ble");
+            if(joyBlePrinter.bLog) {
+                Log.d("", "no ble");
+            }
 
         }
         printerList = new ArrayList<>();
@@ -150,14 +154,14 @@ public class joyBlePrinterManager {
         }
     };
 
-    public static joyBlePrinterManager getInstance(Context context) {
+
+    public static synchronized joyBlePrinterManager getInstance(Context context) {
         if (singleton == null) {
             synchronized (joyBlePrinterManager.class) { // 加锁
                 if (singleton == null) {
                     singleton = new joyBlePrinterManager();
                     if (singleton != null) {
                         singleton.setContext(context);
-
                     }
                 }
             }
@@ -186,7 +190,8 @@ public class joyBlePrinterManager {
 
     }
     public void joyBlePrinterStartScan(joyBlePrinterClient.joyBlePrinter_ScanningCallback callback, int nSec) {
-        if (bScanning) {
+        if (bScanning)
+        {
             handlerDelayScanning.removeCallbacksAndMessages(null);
 
             joyBlePrinterStopScaning();
@@ -194,15 +199,16 @@ public class joyBlePrinterManager {
                 @Override
                 public void run() {
                     Scan(callback,nSec);
-                    if(joyBlePrinter.bLog)
-                            Log.e(TAG,"stop --- scanning");
+                    if(joyBlePrinter.bLog) {
+                        Log.d(joyBlePrinter.TAG, "start scanning");
+                    }
                 }
             },1200);
         }
         else
         {
             if(joyBlePrinter.bLog)
-                Log.e(TAG," --- scanning");
+                Log.d(joyBlePrinter.TAG,"start ");
             Scan(callback,nSec);
         }
 
@@ -242,7 +248,9 @@ public class joyBlePrinterManager {
                     SystemClock.sleep(150);
                     scanningCallback = null;
                 }
-                Log.e(TAG, "Stop Scanning");
+                if(joyBlePrinter.bLog) {
+                    Log.d(joyBlePrinter.TAG, "Stop Scanning");
+                }
 
             }
         }
@@ -295,7 +303,9 @@ public class joyBlePrinterManager {
         else
         {
             nResult = -2;
-            Log.e("joyBlePrinterManager","Permission error");
+            if(joyBlePrinter.bLog) {
+                Log.d(joyBlePrinter.TAG, "Permission error");
+            }
         }
         return nResult;
 
