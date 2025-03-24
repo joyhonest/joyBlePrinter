@@ -145,7 +145,10 @@ public class joyBlePrinterManager {
                 if (!findDevice(device)) {
                     joyBlePrinter printer = new joyBlePrinter(context, device);
                     printerList.add(printer);
-                    //scanningCallback.onFindPrinter(printer);
+                    if(joyBlePrinter.bLog)
+                    {
+                        Log.d(joyBlePrinter.TAG,"get a devide");
+                    }
                     Message msg = Message.obtain();
                     msg.obj = printer;
                     mainHandler.sendMessage(msg);
@@ -189,27 +192,44 @@ public class joyBlePrinterManager {
         }
 
     }
-    public void joyBlePrinterStartScan(joyBlePrinterClient.joyBlePrinter_ScanningCallback callback, int nSec) {
-        if (bScanning)
-        {
-            handlerDelayScanning.removeCallbacksAndMessages(null);
+    public int joyBlePrinterStartScan(joyBlePrinterClient.joyBlePrinter_ScanningCallback callback, int nSec) {
+        if(bScanning)
+            return 0;
 
-            joyBlePrinterStopScaning();
-            handlerDelayScanning.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Scan(callback,nSec);
-                    if(joyBlePrinter.bLog) {
-                        Log.d(joyBlePrinter.TAG, "start scanning");
-                    }
-                }
-            },1200);
-        }
-        else
+//        if (bScanning)
+//        {
+//            handlerDelayScanning.removeCallbacksAndMessages(null);
+//
+//            joyBlePrinterStopScaning();
+//            handlerDelayScanning.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Scan(callback,nSec);
+//                    if(joyBlePrinter.bLog) {
+//                        Log.d(joyBlePrinter.TAG, "start scanning");
+//                    }
+//                }
+//            },1200);
+//        }
+//        else
         {
             if(joyBlePrinter.bLog)
                 Log.d(joyBlePrinter.TAG,"start ");
-            Scan(callback,nSec);
+            this.scanningCallback = callback;
+            int re = ScanBluePrinter();
+            if (re == 0) {
+                if (nSec > 0) {
+                    handlerDelay.removeCallbacksAndMessages(null);
+                    if (bScanning) {
+                        handlerDelay.postDelayed(this::joyBlePrinterStopScaning, 1000L * nSec);
+                    }
+                }
+            }
+            else
+            {
+                this.scanningCallback = null;
+            }
+            return re;
         }
 
     }
@@ -288,16 +308,11 @@ public class joyBlePrinterManager {
                 ScanFilter filter = new ScanFilter.Builder().setServiceUuid(ParcelUuid.fromString(sAdvServiceUUID)).build();
                 filters.add(filter);
 
-                ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setReportDelay(0).setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES).build();
+                //setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+                ScanSettings scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setReportDelay(0).build();
                 mScanner.startScan(filters, scanSettings, mScanCallback);
                 nResult = 0;
             }
-            else
-            {
-
-                nResult = -1;
-            }
-
 
         }
         else

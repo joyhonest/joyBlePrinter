@@ -132,7 +132,7 @@ public class joyBlePrinterClient {
             return false;
         }
     }
-    public static void joyBlePrinter_StartScan(joyBlePrinter_ScanningCallback callback, int nSec)
+    public static int joyBlePrinter_StartScan(joyBlePrinter_ScanningCallback callback, int nSec)
     {
          if(joyBlePrinter.bLog)
          {
@@ -140,7 +140,6 @@ public class joyBlePrinterClient {
          }
          if(blePrinterManager!=null)
          {
-
               blePrinterManager.joyBlePrinterStartScan(callback,nSec);
          }
          else
@@ -150,6 +149,7 @@ public class joyBlePrinterClient {
                  Log.d(joyBlePrinter.TAG,"blePrinterManager is null, please call init first");
              }
          }
+         return -1;
 
     }
 
