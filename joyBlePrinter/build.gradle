@@ -3,7 +3,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.joyhonest'
 
 android {
-    //namespace 'com.joyhonest.joybleprinter'
+//    namespace 'com.joyhonest.joybleprinter'
 //    compileSdk 35
     compileSdkVersion 32
 
@@ -87,7 +87,8 @@ dependencies {
 //1.54      2025-03-20
 //1.55      2025-03-24   //修正客户版本SDK算法为 理工算法
 //1.56      2025-03-24   //修正客户版本SDK算法为 理工算法
+//1.58      2025-03-25   修改 joyPrinterManager 静态方法。
 
-//git commit -m "1.56" -a
+//git commit -m "1.58" -a
 //git push -u origin main
 

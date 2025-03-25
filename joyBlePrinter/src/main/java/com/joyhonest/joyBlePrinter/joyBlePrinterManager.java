@@ -44,19 +44,46 @@ public class joyBlePrinterManager {
     private Handler handlerDelayScanning;
     private BluetoothLeScanner mScanner;
     @SuppressLint("StaticFieldLeak")
-    volatile static joyBlePrinterManager singleton;
+    //volatile static joyBlePrinterManager singleton;
 
 
     UUID advServiceUUID = UUID.fromString("0000af30-0000-1000-8000-00805f9b34fb");
     String sAdvServiceUUID = "0000af30-0000-1000-8000-00805f9b34fb";
 
+    // 1. 私有构造方法
     private joyBlePrinterManager() {
-        if (singleton != null) {
-            throw new IllegalStateException("Singleton instance already created!");
-        }
+//        if (singleton != null) {
+//            throw new IllegalStateException("Singleton instance already created!");
+//        }
     }
 
-    public void setContext(Context context) {
+    // 2. 静态内部类持有唯一实例
+    private static class Holder {
+        @SuppressLint("StaticFieldLeak")
+        private static final joyBlePrinterManager INSTANCE = new joyBlePrinterManager();
+    }
+    public static joyBlePrinterManager getInstance(Context context)
+    {
+        Holder.INSTANCE.setContext(context);
+        return Holder.INSTANCE;
+    }
+
+//    public static joyBlePrinterManager getInstance(Context context) {
+//        if (singleton == null) {
+//            synchronized (joyBlePrinterManager.class) { // 加锁
+//                if (singleton == null) {
+//                    singleton = new joyBlePrinterManager();
+//                    if (singleton != null) {
+//                        singleton.setContext(context);
+//                    }
+//                }
+//            }
+//        }
+//        return singleton;
+//    }
+
+
+    private void setContext(Context context) {
         this.context = context.getApplicationContext();
         if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             if(joyBlePrinter.bLog) {
@@ -75,19 +102,7 @@ public class joyBlePrinterManager {
                     mScanner = mBluetoothAdapter.getBluetoothLeScanner();
                 }
             }
-            @SuppressLint("MissingPermission")
-            List<BluetoothDevice> connectedDevices = blManager.getConnectedDevices(BluetoothProfile.GATT);
-            if(connectedDevices!=null)
-            {
-                for(BluetoothDevice device :connectedDevices)
-                {
-
-                }
-            }
         }
-
-
-
     }
 
     public boolean isBleSupported() {
@@ -158,19 +173,19 @@ public class joyBlePrinterManager {
     };
 
 
-    public static synchronized joyBlePrinterManager getInstance(Context context) {
-        if (singleton == null) {
-            synchronized (joyBlePrinterManager.class) { // 加锁
-                if (singleton == null) {
-                    singleton = new joyBlePrinterManager();
-                    if (singleton != null) {
-                        singleton.setContext(context);
-                    }
-                }
-            }
-        }
-        return singleton;
-    }
+//    public static synchronized joyBlePrinterManager getInstance(Context context) {
+//        if (singleton == null) {
+//            synchronized (joyBlePrinterManager.class) { // 加锁
+//                if (singleton == null) {
+//                    singleton = new joyBlePrinterManager();
+//                    if (singleton != null) {
+//                        singleton.setContext(context);
+//                    }
+//                }
+//            }
+//        }
+//        return singleton;
+//    }
 
 
     boolean bScanning = false;

@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         binding.listView.setOnItemClickListener((parent, view, position, id) -> {
             //选择具体的哪一台打印机
-
+            joyBlePrinter printer = blePrinterList.get(position);
+            int babc = printer.nDeviceType;
             joyBlePrinterClient.joyBlePrinter_SelectPrinter(blePrinterList.get(position), new joyBlePrinterClient.joyBlePrinter_StatusCallback() {
                 @Override
                 public void onConnectedStatus(int nStatus,String sMac) {

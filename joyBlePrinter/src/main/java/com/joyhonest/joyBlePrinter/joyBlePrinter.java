@@ -50,8 +50,9 @@ public class joyBlePrinter {
 
     private boolean bNeedSent = false;
     Context context;
-    public String sName = "aaac";
+    public String sName = "BLE";
     public String sMacAddress;
+    public int nDeviceType = 0;
 
     BluetoothDevice bleDevice;
 

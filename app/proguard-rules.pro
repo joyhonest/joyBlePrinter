@@ -56,5 +56,6 @@
 -keepclassmembers class com.joyhonest.joyBlePrinter.joyBlePrinter {
     java.lang.String sName;
     java.lang.String sMacAddress;
+    int nDeviceType;
 }
 
