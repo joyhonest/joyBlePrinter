@@ -268,8 +268,8 @@ public class joyBlePrinter {
             m_data = new byte[len];
             System.arraycopy(data, 0, m_data, 0, len);
             nStep = 0;
-           // F_Sendquality(0x33);
-            F_Android();
+            F_Sendquality(0x03);
+            //F_Android();
             SentStartPrintingMsg();
 
             return;
@@ -301,8 +301,8 @@ public class joyBlePrinter {
             nLine = 0;
             nStep = 0;
             t1 = System.currentTimeMillis();
-            //F_Sendquality(0x34);
-            F_Android();
+            F_Sendquality(0x04);
+            //F_Android();
 
             SentStartPrintingMsg();
             if (bLog) {
