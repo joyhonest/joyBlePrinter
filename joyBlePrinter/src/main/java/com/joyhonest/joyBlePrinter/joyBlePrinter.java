@@ -517,6 +517,9 @@ public class joyBlePrinter {
             {
                 mGatt.disconnect();
                 mGatt.close();
+                mGatt = null;
+                isOk = false;
+                Write_characteristic = null;
 
             }
         }

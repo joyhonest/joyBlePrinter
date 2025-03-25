@@ -192,59 +192,38 @@ public class joyBlePrinterManager {
 
     private void Scan(joyBlePrinterClient.joyBlePrinter_ScanningCallback callback, int nSec)
     {
+        if(joyBlePrinter.bLog)
+            Log.d(joyBlePrinter.TAG,"start ");
+        this.scanningCallback = callback;
         int re = ScanBluePrinter();
-        if (re == 0)
-        {
-            handlerDelay.removeCallbacksAndMessages(null);
-            this.scanningCallback = callback;
-            if (nSec > 0)
-            {
-                if (bScanning)
-                {
+        if (re == 0) {
+            if (nSec > 0) {
+                handlerDelay.removeCallbacksAndMessages(null);
+                if (bScanning) {
                     handlerDelay.postDelayed(this::joyBlePrinterStopScaning, 1000L * nSec);
                 }
             }
         }
+        else
+        {
+            this.scanningCallback = null;
+        }
 
     }
     public int joyBlePrinterStartScan(joyBlePrinterClient.joyBlePrinter_ScanningCallback callback, int nSec) {
-        if(bScanning)
-            return 0;
-
-//        if (bScanning)
-//        {
-//            handlerDelayScanning.removeCallbacksAndMessages(null);
-//
-//            joyBlePrinterStopScaning();
-//            handlerDelayScanning.postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Scan(callback,nSec);
-//                    if(joyBlePrinter.bLog) {
-//                        Log.d(joyBlePrinter.TAG, "start scanning");
-//                    }
-//                }
-//            },1200);
-//        }
-//        else
+//        if(bScanning)
+//            return 0;
+        if (bScanning)
         {
-            if(joyBlePrinter.bLog)
-                Log.d(joyBlePrinter.TAG,"start ");
-            this.scanningCallback = callback;
-            int re = ScanBluePrinter();
-            if (re == 0) {
-                if (nSec > 0) {
-                    handlerDelay.removeCallbacksAndMessages(null);
-                    if (bScanning) {
-                        handlerDelay.postDelayed(this::joyBlePrinterStopScaning, 1000L * nSec);
-                    }
-                }
-            }
-            else
-            {
-                this.scanningCallback = null;
-            }
-            return re;
+            handlerDelayScanning.removeCallbacksAndMessages(null);
+            joyBlePrinterStopScaning();
+            handlerDelayScanning.postDelayed(() -> Scan(callback,nSec),1200);
+            return 0;
+        }
+        else
+        {
+            Scan(callback,nSec);
+            return 0;
         }
 
     }
@@ -272,21 +251,19 @@ public class joyBlePrinterManager {
                 bScanning = false;
                 if (mScanner != null) {
                     mScanner.stopScan(mScanCallback);
-//                    for(joyBlePrinter printer : printerList)
-//                    {
-//                        if(printer.isConnected())
-//                        {
-//                            printer.Disconnect();
-//                        }
-//                    }
+                    for(joyBlePrinter printer : printerList)
+                    {
+                        if(printer.isConnected())
+                        {
+                            printer.Disconnect();
+                        }
+                    }
                     printerList.clear();
-                    SystemClock.sleep(150);
                     scanningCallback = null;
                 }
                 if(joyBlePrinter.bLog) {
                     Log.d(joyBlePrinter.TAG, "Stop Scanning");
                 }
-
             }
         }
         catch (Exception ignored)
