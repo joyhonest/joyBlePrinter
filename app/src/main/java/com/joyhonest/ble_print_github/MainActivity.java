@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
                 }
                 @Override
-                public void onPrinterStatus(int nStatue,String sMac)
+                public void onPrinterStatus(int nStatue,String sMac,int temperature)
                 {
                     Log.e(TAG,"Status =  "+ nStatue);
 

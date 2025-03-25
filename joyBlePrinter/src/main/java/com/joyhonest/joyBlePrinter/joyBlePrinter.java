@@ -48,6 +48,8 @@ public class joyBlePrinter {
 
     private int  nDelayMs = 5;
 
+    private  int nTemperature = 0;
+
     private boolean bNeedSent = false;
     Context context;
     public String sName = "BLE";
@@ -126,19 +128,19 @@ public class joyBlePrinter {
                     }
                 }
                 if (str.equalsIgnoreCase("StatusCallback1")) {
-                    int x = msg.arg1;
+                    int nStatus1 = msg.arg1;
 
                     if (getBatteryCallback != null) {
                         int xx = msg.arg2;
                         int x2 = msg.what;
-                        getBatteryCallback.onGetBattery(xx, x2,x & 0xff,sMacAddress);
+                        getBatteryCallback.onGetBattery(xx, x2,nStatus1 & 0xff,sMacAddress);
                         getBatteryCallback = null;
 
                     }
                     else
                     {
                         if (Statuscallback != null) {
-                            Statuscallback.onPrinterStatus(x & 0xff,sMacAddress);
+                            Statuscallback.onPrinterStatus(nStatus1 & 0xff,sMacAddress,nTemperature);
                         }
                     }
 
@@ -216,14 +218,14 @@ public class joyBlePrinter {
     }
 
 
-    private void SentSentDataMsg() {
-        Message msg = Message.obtain();
-        msg.obj = "StatusCallback1";
-        msg.arg1 = 0x90 & 0xff; //传输数据
-        msg.arg2 = 1;
-        msg.what = 0;
-        mainHandler.sendMessage(msg);
-    }
+//    private void SentSentDataMsg() {
+//        Message msg = Message.obtain();
+//        msg.obj = "StatusCallback1";
+//        msg.arg1 = 0x90 & 0xff; //传输数据
+//        msg.arg2 = 1;
+//        msg.what = 0;
+//        mainHandler.sendMessage(msg);
+//    }
 
     private void SentInUsb() {
         Message msg = Message.obtain();
@@ -1002,8 +1004,6 @@ public class joyBlePrinter {
                         da[3] == 0x01)    //打印机状态返回
                 {
                     int Status = da[6];
-
-                    //Log.d(TAG,"status AAAAA = " + (Status & 0xff));
                     if((Status & 0x0F) !=0)
                     {
                         bCanSent = false;
@@ -1013,19 +1013,29 @@ public class joyBlePrinter {
                         bIsGetAvailable = false;
                         if (isAvailableCallback != null) {
                             isAvailableCallback.onIsAvailable(true,sMacAddress);
+                            isAvailableCallback = null;
                         }
                     }
-
                     nStatus = Status;
                     Message msg = Message.obtain();
                     msg.obj = "StatusCallback1";
                     msg.arg1 = Status;
-                    //msg.arg2 = 0;
                     msg.what = 0;
-                    if (da.length >= 13) {
+                    if (da.length > 13) {
                         msg.arg2 = da[9] & 0x7f;   //电量
                         msg.what = da[10] + da[11] * 0x100 + da[12] * 0x10000 + da[13] * 0x1000000;
-                    } else {
+                        if(da.length>14)
+                        {
+                            nTemperature = da[14]&0xff;
+                        }
+                        else
+                        {
+                            nTemperature = 0;
+                        }
+
+                    }
+                    else
+                    {
                         msg.arg2 = -1;
                     }
                     mainHandler.sendMessage(msg);
@@ -1038,7 +1048,6 @@ public class joyBlePrinter {
                     ➢ 0x03：缺纸+纸仓开
                     ➢ 0x80：正在打印
                     ➢ 0x00：空闲态
-
                      */
                 }
                 if (da[0] == 0x51 &&

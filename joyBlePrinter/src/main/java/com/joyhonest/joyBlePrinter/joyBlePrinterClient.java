@@ -257,7 +257,7 @@ public class joyBlePrinterClient {
     public interface  joyBlePrinter_StatusCallback
     {
          void onConnectedStatus(int nStatus,String sMac);
-        void onPrinterStatus(int nStatus,String sMac);
+        void onPrinterStatus(int nStatus,String sMac,int nTemperature);
     }
 
     public interface joyBlePrinter_getBatteryCallback
