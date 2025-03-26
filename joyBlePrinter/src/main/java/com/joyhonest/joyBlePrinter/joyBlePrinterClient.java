@@ -2,6 +2,7 @@ package com.joyhonest.joyBlePrinter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -191,16 +192,45 @@ public class joyBlePrinterClient {
 
     }
 
+    private static Bitmap replaceTransparencyWithWhite(Bitmap srcBitmap) {
+        Bitmap resultBitmap = srcBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        int width = resultBitmap.getWidth();
+        int height = resultBitmap.getHeight();
+        int[] pixels = new int[width * height];
+
+        resultBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+        for (int i = 0; i < pixels.length; i++) {
+            int alpha = (pixels[i] >> 24) & 0xFF;
+            if (alpha == 0) { // 完全透明像素
+                pixels[i] = Color.WHITE; // 设为不透明白色
+            }
+        }
+
+        resultBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        return resultBitmap;
+    }
+
+    // 使用方式
+//    Bitmap original = BitmapFactory.decodeResource(getResources(), R.drawable.your_image);
+//    Bitmap modified = replaceTransparencyWithWhite(original);
+//imageView.setImageBitmap(modified);
     public static int joyBlePrinter_SetBitbmp(Bitmap bmp,boolean bPiont,boolean bAutoRotate)
     {
+        if(bmp==null)
+        {
+            return -1;
+        }
+        Bitmap bmpA = replaceTransparencyWithWhite(bmp);
+
         if(mSelectedPrinter !=null)
         {
             mSelectedPrinter.bLattice = bPiont;
-            return naSetBitbmpB(bmp,bPiont,bAutoRotate);
+            return naSetBitbmpB(bmpA,bPiont,bAutoRotate);
         }
         else
         {
-            naSetBitbmpB(bmp,bPiont,bAutoRotate);
+            naSetBitbmpB(bmpA,bPiont,bAutoRotate);
             return  -1;
         }
     }
