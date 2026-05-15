@@ -12,7 +12,7 @@ android {
     defaultConfig {
         //applicationId "com.joyhonest.jh_camera_a_no_adj"
         applicationId "com.joyhonest.ble_print_github"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 32
 
         versionCode 2

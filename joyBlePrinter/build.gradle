@@ -4,11 +4,10 @@ group='com.github.joyhonest'
 
 android {
     //namespace 'com.joyhonest.joybleprinter'
-//    compileSdk 35
     compileSdkVersion 32
 
     defaultConfig {
-        minSdk 24
+        minSdk 26
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -24,7 +23,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -93,7 +92,8 @@ dependencies {
 //1.62      2025-03-25   修正了点阵打印边缘锯齿的问题
 //1.63      2025-03-25   优化了扫描
 //1.64      2025-03-25   把图像算法开放给趣印
+//1.65      2026-05-15   16K对齐
 
-//git commit -m "1.64" -a
+//git commit -m "1.65" -a
 //git push -u origin main
 

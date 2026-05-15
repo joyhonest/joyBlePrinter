@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 
 public class joyBlePrinterClient {
@@ -46,6 +47,8 @@ public class joyBlePrinterClient {
     //public static  void joyBlePrinter_GetSDSize_Battery(joyBlePrinter_getBatteryCallback callback);
     //public static void joyBlePrinter_GetAutoSleepTime(joyBlePrinter_AutoSleepTimeCallback callback);
     //public static void joyBlePrinter_SetAutoSleepTime(int n);
+     //public static void joyBlePrinter_GetPrintDensity(joyBlePrinter_GetPrintDensityCallback callback);
+
 
 
 
@@ -79,7 +82,7 @@ public class joyBlePrinterClient {
     {
         if(mSelectedPrinter != null)
         {
-            mSelectedPrinter.nPrinterValue = nDensity;
+            mSelectedPrinter.nPrinterDensityValue = nDensity;
             if(mSelectedPrinter.isConnected())
             {
                 mSelectedPrinter.StartPrinting();
@@ -93,8 +96,8 @@ public class joyBlePrinterClient {
     {
         if(mSelectedPrinter != null)
         {
-            mSelectedPrinter.nPrinterValue = nDensity;
-            mSelectedPrinter.nPrinterLevel = nLevel;
+            mSelectedPrinter.nPrinterDensityValue = nDensity;
+            mSelectedPrinter.nPrinterDensityLevel = nLevel;
             if(mSelectedPrinter.isConnected())
             {
                 mSelectedPrinter.StartPrinting();
@@ -103,7 +106,6 @@ public class joyBlePrinterClient {
         }
         return  -1;
     }
-
 
     public static  void  joyBlePrinter_Clear()
     {
@@ -115,13 +117,7 @@ public class joyBlePrinterClient {
     public   static void joyBlePrinter_Init(Context context)
     {
             blePrinterManager = joyBlePrinterManager.getInstance(context);
-        // 3. 获取已连接的BLE设备列表
-
     }
-
-
-
-
     public static boolean joyBlePrinter_isScanning()
     {
         if(blePrinterManager!=null)
@@ -179,18 +175,27 @@ public class joyBlePrinterClient {
 
     public static void joyBlePrinter_SelectPrinter(joyBlePrinter printer,joyBlePrinter_StatusCallback callback)
     {
+        boolean bNeedDealy = false;
         if(mSelectedPrinter!=null)
         {
-            if(printer != mSelectedPrinter) {
+            if(printer != mSelectedPrinter)
+            {
                 if (mSelectedPrinter.isConnected()) {
                     mSelectedPrinter.Disconnect();
+                    bNeedDealy = true;
                 }
             }
         }
         mSelectedPrinter = printer;
         mSelectedPrinter.Statuscallback = callback;
-
+        if(bNeedDealy)
+        {
+            SystemClock.sleep(250);
+        }
     }
+
+    public static native void naSetContrast(float fContrast);
+    public static native  void naSetSharpen(float fsharpen);
 
     private static Bitmap replaceTransparencyWithWhite(Bitmap srcBitmap) {
         Bitmap resultBitmap = srcBitmap.copy(Bitmap.Config.ARGB_8888, true);
@@ -275,10 +280,20 @@ public class joyBlePrinterClient {
         if(mSelectedPrinter ==null)
             return;
         mSelectedPrinter.getBatteryCallback = callback;
-        mSelectedPrinter.getDeviceStatus();
+        mSelectedPrinter.getDeviceBattery_SD();
         //mSelectedPrinter.getDeviceSD_Battery();
     }
 
+
+    public static void joyBlePrinter_GetPrintDensity(joyBlePrinter_GetPrintDensityCallback callback)
+    {
+        if(mSelectedPrinter ==null)
+            return;
+        mSelectedPrinter.getPrintDensityCallback = callback;
+        mSelectedPrinter.GetPrintDensity();
+
+
+    }
     public  interface joyBlePrinter_ScanningCallback
     {
         public void   onFindPrinter(joyBlePrinter joyPrinter);
@@ -302,6 +317,11 @@ public class joyBlePrinterClient {
     public interface  joyBlePrinter_AutoSleepTimeCallback
     {
         void onGetAutoSleepTime(int nMin,String sMac);
+    }
+
+    public interface  joyBlePrinter_GetPrintDensityCallback
+    {
+        void onGetPrintDensity(int nDensityLevels,int nPageType,String sMac);
     }
 
 
@@ -384,8 +404,18 @@ public class joyBlePrinterClient {
     }
 
 
+
+
     private static native int naSetBitbmpB(Bitmap bmp,boolean bPiont,boolean bRotate);
     private static  native int naStartPrinting();
+    public  static  native  void naSet32Leve(boolean b);
+    public static  native  void naSetFCliplimit(float fCliplimit);
+    public static  native  void naSetFCliplimitAuto(boolean b);
+
+
+    public static native void naSetEnableCLAHE(boolean b);
+    public static native void naSetEnableDiffuse(boolean b);
+
     //public  static  native  void joyBlePrinter_SetMaxHeight(int nMaxHeight);
     //public static native  void yuv420toBitmap(byte []data,Bitmap bmp,int w,int h);
     public static native  void naTest();
