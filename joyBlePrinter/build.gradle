@@ -7,7 +7,7 @@ android {
     compileSdkVersion 32
 
     defaultConfig {
-        minSdk 26
+        minSdkVersion 24
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -93,7 +93,8 @@ dependencies {
 //1.63      2025-03-25   优化了扫描
 //1.64      2025-03-25   把图像算法开放给趣印
 //1.65      2026-05-15   16K对齐
+//1.66      2026-05-15   sdk 24
 
-//git commit -m "1.65" -a
+//git commit -m "1.66" -a
 //git push -u origin main
 
